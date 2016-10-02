@@ -260,6 +260,7 @@
 		include "../includes/myrellion/anzhelaRedMyrMedic.as";
 		include "../includes/myrellion/asennia.as";
 		include "../includes/myrellion/bathHouse.as";
+		include "../includes/myrellion/cerresRoadTrip.as";
 		include "../includes/myrellion/cockvines.as";
 		include "../includes/myrellion/cockvineseedling.as";
 		include "../includes/myrellion/crystalGoo.as";
@@ -483,6 +484,7 @@
 			initUvetoRooms();
 			kiInitRooms();
 			initVesperiaRoom();
+			crtInitRooms();
 			
 			mapper = new Mapper(this.rooms)
 
