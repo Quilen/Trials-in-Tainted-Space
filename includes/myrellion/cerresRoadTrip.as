@@ -46,15 +46,22 @@ Challenges on the way there:
 		-giant monster from previous challenge chases you into small labyrinthine side tunnel
 		-if low intelligence, maze is physically impossible/loops around on itself
 		-ganrael can tunnel through some walls
-		-minotaur-like creature hunts you
+		-minotaur-like creature hunts you (or maybe a dragon-person with a hoard)
 			-attacks directly if someone get's seperated from the group, else stalks you audibly
 		-challenge resolved when player finds the exit
+	4. Cross a large underground river
+		-Wings or jetpack: fly a rope across to make crossing possible for others
+		-high aim and physique: tie a rope to spear, throw it across river, pass alon yourself and tie properly
 
 Callenges there:
 
 
 Challenges on the way back:
 
+
+
+TODOS:
+	-set flags["CRT_DONE"] when trip finished
 
 */
 
@@ -73,44 +80,38 @@ public function crtInitFlags():void
 
 //----------------------------------------------------dialog-----------------------------------------------------
 
-public function cerresRoadTripPrep():void
+public function crtStart():void
+{
+	if (flags["QUEENSGUARD_STAB_TIME"] == undefined || flags["QUEENSGUARD_STAB_TIME"] + (14 * 24 * 60) > GetGameTimestamp())
+	{
+		rooms["2I11"].removeFlag(GLOBAL.NPC);
+		output("Several stone pillars line the passage on either side, clearly hand-carved and polished to a shine. Rather than glowing fungus coating the walls, several small clay sconces have been bolted onto the pillars, filled with colonies of the glowing fungus that sheds a soft, warm light across the tunnel. To the west, you can see what looks like a pair of heavy gates, flanked by a pair of large sconces filled with pulsing, glowing fungus.");
+	}
+	else
+	{
+		rooms["2I11"].addFlag(GLOBAL.NPC);
+		output("You find the Queens Road less quiet than you are used to. Cerres, Taivra’s personal bodyguard, is standing amidst a flurry of activity - a dozen nyrea loading supplies onto a wagon the size of a hovertruck, huntresses sharpening their spears, arguing over routes and putting on armor. Cerres herself is directing several nervous looking males as they strap a humongous ganrael into a harness made of ropes thick enough to anchor a warship. The dark green ganrael has taken the shape of a massive caterpillar, all overlapping armorplates and legs as thick as tree trunks, dwarfing the surounding nyrea. When one of the males walks around its almost featureless front it grunts at her. She squeaks and jumps, holding her hands to her chest for a moment before continuing her tasks.\n\nAs soon as Cerres notices you, she takes a few steps towards you, bows, and says <i>“At your service, my liege.”</i>");
+		variableRoomUpdateCheck();
+		addButton(0, "Queensguard", crtPrep, undefined, "Approch Queensguard", "Ask what's going on here.");
+	}
+}
+
+public function crtPrep():void
 {
 	clearOutput();
 	showBust("QUEENSGUARD");
 	showName("\nCERRES");
 	author("Quilen")
+
+	output("<i>“Ready to go on an adventure?”</i>");
 	
-	//----------------introduce roadtrip----------------
-	if (flags["CRT_READY_FOR_ROADTRIP"] == undefined) {
-		output("<i>“So, what's going on here?”</i>, you ask as a nyrea passes by with a crate full of dried mushrooms.");
-		output("\n\nShe responds, <i>“I am mustering a punitive expedition against our enemies, my liege. Not long ago, a few of our citizens were kidnapped outside our gates. Thanks to huntress Quilena's initiative and skill, we now hold one of the kidnappers captive and discovered their origin through interrogation.”</i>");
-		if(pc.isNice()) output("\nPc is nice.");
-		//TODO
-		clearMenu();
-		addButton(0,"Come With",crtPrep1,undefined,"Come With","That sounds interesting. Ask to join her.");
-		addButton(1,"Carry On",mainGameMenu,undefined,"Carry On","Tell her to carry on.");
-	}
-	else //----------------start roadtrip----------------
-	{
-		output("<i>“Are your preparations completed, " + pc.mf("king","queen") + " [pc.name]?”</i>");
-		
-		clearMenu();
-		addButton(0,"Yes",crtStart,undefined,"Go on adventure","Yes, you are ready to go on an adventure. It might take a while until you can come back.");
-		addButton(1,"No",mainGameMenu,undefined,"Stay here","No, you still have things to do here - you are sure Cerres will wait patiently for her liege if that is what you desire.");
-	}
-}
-
-public function crtPrep1():void
-{
-	clearOutput();
-	//TODO
-	output("You ask to come along. Maybe have the option to explain your reasoning - want to see how your subjects do things, lust for adventure, etc. \n\nCerres tells you that it will take a little longer to get everything ready - they will leave once you are back.");
-	flags["CRT_READY_FOR_ROADTRIP"] = 1;
 	clearMenu();
-	addButton(0,"Next",mainGameMenu);
+	addButton(0,"Yes",crtLeaveTown,undefined,"Go on adventure","Yes, you are ready to go on an adventure. It might take a while until you can come back.");
+	addButton(1,"No",mainGameMenu,undefined,"Stay here","No, you have better things to do..");
 }
 
-public function crtStart():void
+
+public function crtLeaveTown():void
 {
 	clearOutput();
 	crtInitFlags();
@@ -127,9 +128,27 @@ public function crtStart():void
 
 	// map
 	/*
-		                        crt001
-		                           |
-		                        crt000 <-- entry point
+
+
+
+
+  crt011                        crt005c
+     |                             |
+  crt010 -- crt009              crt005b
+               |                   |
+    	    crt008              crt005a <-- red myr territory diplomatic
+    	       |                   |
+stealth --> crt007 -- crt006 -- crt005
+    	                           |
+    	                        crt004
+    	                           |
+    	                        crt003
+    	                           |
+    	                        crt002
+    	                           |
+    	                        crt001
+    	                           |
+    	                        crt000 <-- entry point
 
 	*/
 
@@ -182,11 +201,70 @@ public function crtStart():void
 		rooms["crt001"].runOnEnter = null;
 		rooms["crt001"].planet = "PLANET: MYRELLION";
 		rooms["crt001"].system = "SYSTEM: SINDATHU";
+		rooms["crt001"].northExit = "crt002";
+		rooms["crt001"].southExit = "crt000";
 		rooms["crt001"].moveMinutes = 60;
 		rooms["crt001"].addFlag(GLOBAL.INDOOR);
 		rooms["crt001"].addFlag(GLOBAL.HAZARD);
 		rooms["crt001"].addFlag(GLOBAL.PUBLIC);
 		rooms["crt001"].addFlag(GLOBAL.CAVE);
+		
+		rooms["crt002"] = new RoomClass(this);
+		rooms["crt002"].roomName = "crtPlaceName";
+		rooms["crt002"].description = "crtPlaceDesc";
+		rooms["crt002"].runOnEnter = null;
+		rooms["crt002"].planet = "PLANET: MYRELLION";
+		rooms["crt002"].system = "SYSTEM: SINDATHU";
+		rooms["crt002"].northExit = "crt003";
+		rooms["crt002"].southExit = "crt001";
+		rooms["crt002"].moveMinutes = 60;
+		rooms["crt002"].addFlag(GLOBAL.INDOOR);
+		rooms["crt002"].addFlag(GLOBAL.HAZARD);
+		rooms["crt002"].addFlag(GLOBAL.PUBLIC);
+		rooms["crt002"].addFlag(GLOBAL.CAVE);
+		
+		rooms["crt003"] = new RoomClass(this);
+		rooms["crt003"].roomName = "crtPlaceName";
+		rooms["crt003"].description = "crtPlaceDesc";
+		rooms["crt003"].runOnEnter = null;
+		rooms["crt003"].planet = "PLANET: MYRELLION";
+		rooms["crt003"].system = "SYSTEM: SINDATHU";
+		rooms["crt003"].northExit = "crt004";
+		rooms["crt003"].southExit = "crt002";
+		rooms["crt003"].moveMinutes = 60;
+		rooms["crt003"].addFlag(GLOBAL.INDOOR);
+		rooms["crt003"].addFlag(GLOBAL.HAZARD);
+		rooms["crt003"].addFlag(GLOBAL.PUBLIC);
+		rooms["crt003"].addFlag(GLOBAL.CAVE);
+		
+		rooms["crt004"] = new RoomClass(this);
+		rooms["crt004"].roomName = "crtPlaceName";
+		rooms["crt004"].description = "crtPlaceDesc";
+		rooms["crt004"].runOnEnter = null;
+		rooms["crt004"].planet = "PLANET: MYRELLION";
+		rooms["crt004"].system = "SYSTEM: SINDATHU";
+		rooms["crt004"].northExit = "crt005";
+		rooms["crt004"].southExit = "crt003";
+		rooms["crt004"].moveMinutes = 60;
+		rooms["crt004"].addFlag(GLOBAL.INDOOR);
+		rooms["crt004"].addFlag(GLOBAL.HAZARD);
+		rooms["crt004"].addFlag(GLOBAL.PUBLIC);
+		rooms["crt004"].addFlag(GLOBAL.CAVE);
+		
+		rooms["crt005"] = new RoomClass(this);
+		rooms["crt005"].roomName = "crtPlaceName";
+		rooms["crt005"].description = "crtPlaceDesc";
+		rooms["crt005"].runOnEnter = null;
+		rooms["crt005"].planet = "PLANET: MYRELLION";
+		rooms["crt005"].system = "SYSTEM: SINDATHU";
+		rooms["crt005"].southExit = "crt004";
+		//rooms["crt005"].westExit = "crt006";
+		//rooms["crt005"].northExit = "crt005a";
+		rooms["crt005"].moveMinutes = 60;
+		rooms["crt005"].addFlag(GLOBAL.INDOOR);
+		rooms["crt005"].addFlag(GLOBAL.HAZARD);
+		rooms["crt005"].addFlag(GLOBAL.PUBLIC);
+		rooms["crt005"].addFlag(GLOBAL.CAVE);
 	}
 
 

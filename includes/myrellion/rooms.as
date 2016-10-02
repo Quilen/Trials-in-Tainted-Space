@@ -2937,7 +2937,7 @@ public function initializeMyrellionRooms():void
 	//No random encounters here! 
 	rooms["2I11"] = new RoomClass(this);
 	rooms["2I11"].roomName = "QUEEN'S\nROAD NORTH";
-	rooms["2I11"].description = "Several stone pillars line the passage on either side, clearly hand-carved and polished to a shine. Rather than glowing fungus coating the walls, several small clay sconces have been bolted onto the pillars, filled with colonies of the glowing fungus that sheds a soft, warm light across the tunnel. To the west, you can see what looks like a pair of heavy gates, flanked by a pair of large sconces filled with pulsing, glowing fungus.";
+	rooms["2I11"].description = "";
 	rooms["2I11"].planet = "PLANET: MYRELLION";
 	rooms["2I11"].system = "SYSTEM: SINDATHU";
 	rooms["2I11"].northExit = "";
@@ -2945,7 +2945,7 @@ public function initializeMyrellionRooms():void
 	rooms["2I11"].southExit = "2I13";
 	rooms["2I11"].westExit = "2G11";
 	rooms["2I11"].moveMinutes = 5;
-	rooms["2I11"].runOnEnter = undefined;
+	rooms["2I11"].runOnEnter = crtStart;
 	rooms["2I11"].addFlag(GLOBAL.CAVE);
 	rooms["2I11"].addFlag(GLOBAL.INDOOR);
 	

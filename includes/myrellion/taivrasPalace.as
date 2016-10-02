@@ -439,7 +439,8 @@ public function queensFountainBonusShit():Boolean
 
 public function queensguardAtFountain():Boolean
 {
-	if(pc.hasPerk("Nyrean Royal") && flags["QUEENSGUARD_STAB_TIME"] != undefined && flags["QUEENSGUARD_STAB_TIME"] + (12 * 60) < GetGameTimestamp()) return true;
+	if(pc.hasPerk("Nyrean Royal") && flags["QUEENSGUARD_STAB_TIME"] != undefined && flags["QUEENSGUARD_STAB_TIME"] + (12 * 60) < GetGameTimestamp() && flags["QUEENSGUARD_STAB_TIME"] + (14 * 24 * 60) > GetGameTimestamp()) return true;
+	if (flags["CRT_DONE"] != undefined) return true;
 	return false;
 }
 
