@@ -34,7 +34,10 @@ Challenges on the way there:
 			-get ambushed by some ganrael ambushers or something
 			-a huntress falls down a cliff and you have to rescue her
 			-if you screw up near the end, be chased away by a red tank
-	2. Accidentally make camp in the mouth of a (sleeping) giant monster
+	2. Cross a large underground river
+		-Wings or jetpack: fly a rope across to make crossing possible for others
+		-high aim and physique: tie a rope to spear, throw it across river, pass alon yourself and tie properly
+	3. Accidentally make camp in the mouth of a (sleeping) giant monster
 		-avoid if aim and intelligence are high or player eyes are better than human (see teeth)
 		-else notice breathing/snoring if intelligence decent or player's ears are better than human
 			-sneak out of mouth
@@ -42,21 +45,20 @@ Challenges on the way there:
 			-fight to hurt the monster enough that it spits you out while it chews you
 			-if you fail the ganrael breaks through the monster's teeth and gets chewed on in the process
 		-afterwards: angry monster chases you
-	3. Get lost in the maze
+	4. Get lost in the maze
 		-giant monster from previous challenge chases you into small labyrinthine side tunnel
 		-if low intelligence, maze is physically impossible/loops around on itself
 		-ganrael can tunnel through some walls
 		-minotaur-like creature hunts you (or maybe a dragon-person with a hoard)
 			-attacks directly if someone get's seperated from the group, else stalks you audibly
 		-challenge resolved when player finds the exit
-	4. Cross a large underground river
-		-Wings or jetpack: fly a rope across to make crossing possible for others
-		-high aim and physique: tie a rope to spear, throw it across river, pass alon yourself and tie properly
 
 Callenges there:
 
 
 Challenges on the way back:
+
+	n. Get greeted by your crew who is happy to have you back.
 
 
 
@@ -69,8 +71,7 @@ TODOS:
 
 //----------------------------------------------------functions--------------------------------------------------
 
-public function crtInitFlags():void
-{
+public function crtInitFlags():void {
 	flags["CRT_HUNTRESSES_NUMBER"] = 12;
 	flags["CRT_HUNTRESSES_MORALE"] = 50;
 	flags["CRT_GANRAEL_HEALTH"] = 2000;
@@ -80,15 +81,11 @@ public function crtInitFlags():void
 
 //----------------------------------------------------dialog-----------------------------------------------------
 
-public function crtStart():void
-{
-	if (flags["QUEENSGUARD_STAB_TIME"] == undefined || flags["QUEENSGUARD_STAB_TIME"] + (14 * 24 * 60) > GetGameTimestamp())
-	{
+public function crtStart():void {
+	if (flags["QUEENSGUARD_STAB_TIME"] == undefined || flags["QUEENSGUARD_STAB_TIME"] + (14 * 24 * 60) > GetGameTimestamp()) {
 		rooms["2I11"].removeFlag(GLOBAL.NPC);
 		output("Several stone pillars line the passage on either side, clearly hand-carved and polished to a shine. Rather than glowing fungus coating the walls, several small clay sconces have been bolted onto the pillars, filled with colonies of the glowing fungus that sheds a soft, warm light across the tunnel. To the west, you can see what looks like a pair of heavy gates, flanked by a pair of large sconces filled with pulsing, glowing fungus.");
-	}
-	else
-	{
+	} else {
 		rooms["2I11"].addFlag(GLOBAL.NPC);
 		output("You find the Queens Road less quiet than you are used to. Cerres, Taivra’s personal bodyguard, is standing amidst a flurry of activity - a dozen nyrea loading supplies onto a wagon the size of a hovertruck, huntresses sharpening their spears, arguing over routes and putting on armor. Cerres herself is directing several nervous looking males as they strap a humongous ganrael into a harness made of ropes thick enough to anchor a warship. The dark green ganrael has taken the shape of a massive caterpillar, all overlapping armorplates and legs as thick as tree trunks, dwarfing the surounding nyrea. When one of the males walks around its almost featureless front it grunts at her. She squeaks and jumps, holding her hands to her chest for a moment before continuing her tasks.\n\nAs soon as Cerres notices you, she takes a few steps towards you, bows, and says <i>“At your service, my liege.”</i>");
 		variableRoomUpdateCheck();
@@ -96,8 +93,7 @@ public function crtStart():void
 	}
 }
 
-public function crtPrep():void
-{
+public function crtPrep():void {
 	clearOutput();
 	showBust("QUEENSGUARD");
 	showName("\nCERRES");
@@ -111,8 +107,7 @@ public function crtPrep():void
 }
 
 
-public function crtLeaveTown():void
-{
+public function crtLeaveTown():void {
 	clearOutput();
 	crtInitFlags();
 	output("Descrition of how your journey starts.");
@@ -123,37 +118,36 @@ public function crtLeaveTown():void
 }
 
 
+//--------Challenge 4 begins here--------
+
+public function crtC4fleeTimeStamp():void {
+	if (flags["CRT_C4_FLEE_TIMESTAMP"] == undefined) flags["CRT_C4_FLEE_TIMESTAMP"] = GetGameTimestamp();
+}
+
+public function crtC4horrifyingMonster():void {
+	clearMenu();
+	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) ) {
+		output("The terrifying monstrositly still looks pissed from your last encounter. She paces up and down next to the diminutive passage you escaped through, her footfalls massive and forceful as thunder.\n\nIt's probably better not to go out yet, lest you end up a ");
+		if (pc.armor.defense >= 3) output("crunchy ");
+		output("snack for this beast.");
+	} else {
+		output("You slowly and carefully peek your head out to see if the beast has left in the meantime.\n\nAt first you don't see anything, but upon a closer look you spot the malicious, vengeful glimmer of her eyes in the distance, half hidden behind a bunch of rocks. From afar, the creature is easy to mistake for lifeless scenery - no wonder you ended up in your current predicament...\n\nEither way, it doesn't look like this tenacious terror is going to get tired of hunting you any time soon. You'd better find another way out of here.");
+	}
+	
+	addButton(0, "Go Back", crtC4horrifyingMonsterGoBack);
+}
+
+public function crtC4horrifyingMonsterGoBack():void {
+	currentLocation = "crtC4R2120";
+	mainGameMenu();
+}
+
+
 
 //----------------------------------------------------spaces-----------------------------------------------------
 
-	// map
-	/*
-
-
-
-
-  crt011                        crt005c
-     |                             |
-  crt010 -- crt009              crt005b
-               |                   |
-    	    crt008              crt005a <-- red myr territory diplomatic
-    	       |                   |
-stealth --> crt007 -- crt006 -- crt005
-    	                           |
-    	                        crt004
-    	                           |
-    	                        crt003
-    	                           |
-    	                        crt002
-    	                           |
-    	                        crt001
-    	                           |
-    	                        crt000 <-- entry point
-
-	*/
-
-	// Room template
-	/*
+// Room template
+/*
 	rooms[""] = new RoomClass(this);
 	rooms[""].roomName = "";
 	rooms[""].description = "";
@@ -178,94 +172,116 @@ stealth --> crt007 -- crt006 -- crt005
 	rooms[""].addFlag(GLOBAL.LIFTUP);
 	rooms[""].addFlag(GLOBAL.MEDICAL);
 	rooms[""].addFlag(GLOBAL.NOFAP);
-	*/
-	
-	public function crtInitRooms():void
-	{
-		rooms["crt000"] = new RoomClass(this);
-		rooms["crt000"].roomName = "crtPlaceName";
-		rooms["crt000"].description = "crtPlaceDesc";
-		rooms["crt000"].runOnEnter = null;
-		rooms["crt000"].planet = "PLANET: MYRELLION";
-		rooms["crt000"].system = "SYSTEM: SINDATHU";
-		rooms["crt000"].northExit = "crt001";
-		rooms["crt000"].moveMinutes = 60;
-		rooms["crt000"].addFlag(GLOBAL.INDOOR);
-		rooms["crt000"].addFlag(GLOBAL.HAZARD);
-		rooms["crt000"].addFlag(GLOBAL.PUBLIC);
-		rooms["crt000"].addFlag(GLOBAL.CAVE);
+*/
 
-		rooms["crt001"] = new RoomClass(this);
-		rooms["crt001"].roomName = "crtPlaceName";
-		rooms["crt001"].description = "crtPlaceDesc";
-		rooms["crt001"].runOnEnter = null;
-		rooms["crt001"].planet = "PLANET: MYRELLION";
-		rooms["crt001"].system = "SYSTEM: SINDATHU";
-		rooms["crt001"].northExit = "crt002";
-		rooms["crt001"].southExit = "crt000";
-		rooms["crt001"].moveMinutes = 60;
-		rooms["crt001"].addFlag(GLOBAL.INDOOR);
-		rooms["crt001"].addFlag(GLOBAL.HAZARD);
-		rooms["crt001"].addFlag(GLOBAL.PUBLIC);
-		rooms["crt001"].addFlag(GLOBAL.CAVE);
-		
-		rooms["crt002"] = new RoomClass(this);
-		rooms["crt002"].roomName = "crtPlaceName";
-		rooms["crt002"].description = "crtPlaceDesc";
-		rooms["crt002"].runOnEnter = null;
-		rooms["crt002"].planet = "PLANET: MYRELLION";
-		rooms["crt002"].system = "SYSTEM: SINDATHU";
-		rooms["crt002"].northExit = "crt003";
-		rooms["crt002"].southExit = "crt001";
-		rooms["crt002"].moveMinutes = 60;
-		rooms["crt002"].addFlag(GLOBAL.INDOOR);
-		rooms["crt002"].addFlag(GLOBAL.HAZARD);
-		rooms["crt002"].addFlag(GLOBAL.PUBLIC);
-		rooms["crt002"].addFlag(GLOBAL.CAVE);
-		
-		rooms["crt003"] = new RoomClass(this);
-		rooms["crt003"].roomName = "crtPlaceName";
-		rooms["crt003"].description = "crtPlaceDesc";
-		rooms["crt003"].runOnEnter = null;
-		rooms["crt003"].planet = "PLANET: MYRELLION";
-		rooms["crt003"].system = "SYSTEM: SINDATHU";
-		rooms["crt003"].northExit = "crt004";
-		rooms["crt003"].southExit = "crt002";
-		rooms["crt003"].moveMinutes = 60;
-		rooms["crt003"].addFlag(GLOBAL.INDOOR);
-		rooms["crt003"].addFlag(GLOBAL.HAZARD);
-		rooms["crt003"].addFlag(GLOBAL.PUBLIC);
-		rooms["crt003"].addFlag(GLOBAL.CAVE);
-		
-		rooms["crt004"] = new RoomClass(this);
-		rooms["crt004"].roomName = "crtPlaceName";
-		rooms["crt004"].description = "crtPlaceDesc";
-		rooms["crt004"].runOnEnter = null;
-		rooms["crt004"].planet = "PLANET: MYRELLION";
-		rooms["crt004"].system = "SYSTEM: SINDATHU";
-		rooms["crt004"].northExit = "crt005";
-		rooms["crt004"].southExit = "crt003";
-		rooms["crt004"].moveMinutes = 60;
-		rooms["crt004"].addFlag(GLOBAL.INDOOR);
-		rooms["crt004"].addFlag(GLOBAL.HAZARD);
-		rooms["crt004"].addFlag(GLOBAL.PUBLIC);
-		rooms["crt004"].addFlag(GLOBAL.CAVE);
-		
-		rooms["crt005"] = new RoomClass(this);
-		rooms["crt005"].roomName = "crtPlaceName";
-		rooms["crt005"].description = "crtPlaceDesc";
-		rooms["crt005"].runOnEnter = null;
-		rooms["crt005"].planet = "PLANET: MYRELLION";
-		rooms["crt005"].system = "SYSTEM: SINDATHU";
-		rooms["crt005"].southExit = "crt004";
-		//rooms["crt005"].westExit = "crt006";
-		//rooms["crt005"].northExit = "crt005a";
-		rooms["crt005"].moveMinutes = 60;
-		rooms["crt005"].addFlag(GLOBAL.INDOOR);
-		rooms["crt005"].addFlag(GLOBAL.HAZARD);
-		rooms["crt005"].addFlag(GLOBAL.PUBLIC);
-		rooms["crt005"].addFlag(GLOBAL.CAVE);
-	}
+public function crtInitRooms():void {
+
+	//TODO: remove this
+	rooms["crtTestTele"] = new RoomClass(this);
+	rooms["crtTestTele"].roomName = "crtPlaceName";
+	rooms["crtTestTele"].description = "crtPlaceDesc";
+	rooms["crtTestTele"].runOnEnter = null;
+	rooms["crtTestTele"].planet = "PLANET: MYRELLION";
+	rooms["crtTestTele"].system = "SYSTEM: SINDATHU";
+	rooms["crtTestTele"].westExit = "crtC4R2020";
+
+	rooms["crt000"] = new RoomClass(this);
+	rooms["crt000"].roomName = "crtPlaceName";
+	rooms["crt000"].description = "crtPlaceDesc";
+	rooms["crt000"].runOnEnter = null;
+	rooms["crt000"].planet = "PLANET: MYRELLION";
+	rooms["crt000"].system = "SYSTEM: SINDATHU";
+	rooms["crt000"].southExit = "crtTestTele";
+	rooms["crt000"].moveMinutes = 60;
+	rooms["crt000"].addFlag(GLOBAL.INDOOR);
+	rooms["crt000"].addFlag(GLOBAL.HAZARD);
+	rooms["crt000"].addFlag(GLOBAL.PUBLIC);
+	rooms["crt000"].addFlag(GLOBAL.CAVE);
+	
+	//--------Challenge 4 begins here--------
+	
+	rooms["crtC4R2020"] = new RoomClass(this);
+	rooms["crtC4R2020"].roomName = "Horrifying\nMonster";
+	rooms["crtC4R2020"].description = "";
+	rooms["crtC4R2020"].runOnEnter = crtC4horrifyingMonster;
+	rooms["crtC4R2020"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2020"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2020"].northExit = "crtC4R2021";
+	rooms["crtC4R2020"].southExit = "crtC4R2019";
+	rooms["crtC4R2020"].eastExit = "crtC4R2120";
+	rooms["crtC4R2020"].moveMinutes = 2;
+	rooms["crtC4R2020"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2020"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC4R2020"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2020"].addFlag(GLOBAL.CAVE);
+	rooms["crtC4R2020"].addFlag(GLOBAL.OBJECTIVE);
+
+	rooms["crtC4R2021"] = new RoomClass(this);
+	rooms["crtC4R2021"].roomName = "Passage";
+	rooms["crtC4R2021"].description = "A large, wide open passage.";
+	rooms["crtC4R2021"].runOnEnter = null;
+	rooms["crtC4R2021"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2021"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2021"].southExit = "crtC4R2020";
+	rooms["crtC4R2021"].northExit = "crtC4R2022";
+	rooms["crtC4R2021"].moveMinutes = 2;
+	rooms["crtC4R2021"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2021"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC4R2021"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2021"].addFlag(GLOBAL.CAVE);
+	
+	rooms["crtC4R2022"] = new RoomClass(this);
+	rooms["crtC4R2022"].roomName = "Passage";
+	rooms["crtC4R2022"].description = "A large, wide open passage.";
+	rooms["crtC4R2022"].runOnEnter = null;
+	rooms["crtC4R2022"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2022"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2022"].southExit = "crtC4R2021";
+	rooms["crtC4R2022"].moveMinutes = 2;
+	rooms["crtC4R2022"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2022"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC4R2022"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2022"].addFlag(GLOBAL.CAVE);
+	
+	rooms["crtC4R2019"] = new RoomClass(this);
+	rooms["crtC4R2019"].roomName = "Passage";
+	rooms["crtC4R2019"].description = "A large, wide open passage.";
+	rooms["crtC4R2019"].runOnEnter = null;
+	rooms["crtC4R2019"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2019"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2019"].northExit = "crtC4R2020";
+	rooms["crtC4R2019"].southExit = "crtC4R2018";
+	rooms["crtC4R2019"].moveMinutes = 2;
+	rooms["crtC4R2019"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2019"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC4R2019"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2019"].addFlag(GLOBAL.CAVE);
+	
+	rooms["crtC4R2018"] = new RoomClass(this);
+	rooms["crtC4R2018"].roomName = "Passage";
+	rooms["crtC4R2018"].description = "A large, wide open passage.";
+	rooms["crtC4R2018"].runOnEnter = null;
+	rooms["crtC4R2018"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2018"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2018"].northExit = "crtC4R2019";
+	rooms["crtC4R2018"].moveMinutes = 2;
+	rooms["crtC4R2018"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2018"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC4R2018"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2018"].addFlag(GLOBAL.CAVE);
+	
+	rooms["crtC4R2120"] = new RoomClass(this);
+	rooms["crtC4R2120"].roomName = "Small Passage";
+	rooms["crtC4R2120"].description = "You narrowly escaped the beast through this tiny passage. Well, relatively tiny, anyways - you still managed to fit you ganrael friend through it.";
+	rooms["crtC4R2120"].runOnEnter = crtC4fleeTimeStamp;
+	rooms["crtC4R2120"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2120"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2120"].westExit = "crtC4R2020";
+	rooms["crtC4R2120"].moveMinutes = 2;
+	rooms["crtC4R2120"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2120"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2120"].addFlag(GLOBAL.CAVE);
+}
 
 
 
