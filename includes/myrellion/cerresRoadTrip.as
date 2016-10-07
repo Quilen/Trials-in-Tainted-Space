@@ -9,7 +9,7 @@ They will face seven challenges on the way there, one big challenge to rescue th
 Companions:
 	-Queensguard Cerres (super loyal, very formal until she knows you better)
 	-A massive ganrael that draws the supply wagon (smarter then they let on)
-		(can get hurt if something goes wrong)
+		(can get hurt if something goes wrong) (name: Iumen)
 	-A dozen nyrea huntresses (they act as a pack most of the time)
 		(some of them may die if something goes very wrong)
 		(lose morale if things go somewhat wrong, gain morale if you do cool stuff)
@@ -99,6 +99,7 @@ public function crtPrep():void {
 	showName("\nCERRES");
 	author("Quilen")
 
+	//TODO
 	output("<i>“Ready to go on an adventure?”</i>");
 	
 	clearMenu();
@@ -110,9 +111,9 @@ public function crtPrep():void {
 public function crtLeaveTown():void {
 	clearOutput();
 	crtInitFlags();
-	output("Descrition of how your journey starts.");
 	//TODO
-	currentLocation = "crt000";
+	output("Descrition of how your journey starts.");
+	currentLocation = "crtTestTele";
 	clearMenu();
 	addButton(0,"Next",mainGameMenu);
 }
@@ -120,21 +121,30 @@ public function crtLeaveTown():void {
 
 //--------Challenge 4 begins here--------
 
-public function crtC4fleeTimeStamp():void {
-	if (flags["CRT_C4_FLEE_TIMESTAMP"] == undefined) flags["CRT_C4_FLEE_TIMESTAMP"] = GetGameTimestamp();
-}
-
-public function crtC4horrifyingMonster():void {
+public function crtC4horrifyingMonster():Boolean {
+	clearOutput();
 	clearMenu();
-	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) ) {
-		output("The terrifying monstrositly still looks pissed from your last encounter. She paces up and down next to the diminutive passage you escaped through, her footfalls massive and forceful as thunder.\n\nIt's probably better not to go out yet, lest you end up a ");
+	if (flags["CRT_C4_FLEE_TIMESTAMP"] == undefined) flags["CRT_C4_FLEE_TIMESTAMP"] = GetGameTimestamp();
+	
+	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) && flags["CRT_C4_SHOT_TAKEN"] == undefined ) {
+		output("The terrifying monstrosity still looks pissed from your last encounter. She paces up and down next to the diminutive passage you escaped through, her footfalls massive and forceful as thunder.\n\nIt's probably better not to go out yet, lest you end up a ");
 		if (pc.armor.defense >= 3) output("crunchy ");
 		output("snack for this beast.");
 	} else {
 		output("You slowly and carefully peek your head out to see if the beast has left in the meantime.\n\nAt first you don't see anything, but upon a closer look you spot the malicious, vengeful glimmer of her eyes in the distance, half hidden behind a bunch of rocks. From afar, the creature is easy to mistake for lifeless scenery - no wonder you ended up in your current predicament...\n\nEither way, it doesn't look like this tenacious terror is going to get tired of hunting you any time soon. You'd better find another way out of here.");
 	}
-	
-	addButton(0, "Go Back", crtC4horrifyingMonsterGoBack);
+	clearMenu();
+	addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "This creature is too tough a nut to crack.");
+	if (flags["CRT_C4_SHOT_TAKEN"] == undefined && !(pc.meleeWeapon is EmptySlot)) {
+		addButton(1, "Shoot", crtC4horrifyingMonsterTakeShot, undefined, "Shoot", "The monster can't reach you! You can shoot her until she dies or runs off!");
+	} else {
+		if (!(pc.meleeWeapon is EmptySlot)) {
+			addDisabledButton(1, "Shoot", "Shoot", "You have no reason to assume that you would get her this time. No point wasting ammunition.");
+		} else {
+			addDisabledButton(1, "Shoot", "Shoot", "You don't even <i>have</i> a ranged weapon...");
+		}
+	}
+	return true;
 }
 
 public function crtC4horrifyingMonsterGoBack():void {
@@ -142,6 +152,27 @@ public function crtC4horrifyingMonsterGoBack():void {
 	mainGameMenu();
 }
 
+public function crtC4horrifyingMonsterTakeShot():void {
+	clearOutput();
+	clearMenu();
+	flags["CRT_C4_SHOT_TAKEN"] = 1;
+
+	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) ) {
+		output("The monstrosity is an easy target, big as a barn and clomping around only meters away. You level your [pc.rangedWeapon] at her and " + pc.rangedWeapon.attackVerb + "! And hit!\n\n...And it didn't do very much.\n\nStill, you'll grind her down. Or so you think, anyways, but after a couple more hits the beast jumps behind an massive rock formation, landing with a <i>THUMP</i> that shakes the ground under you.\n\nLooks like you won't be able to " + pc.rangedWeapon.attackVerb + " her to death over the course of the next few hours, after all.\n\nYou briefly consider sneaking away while the beast hides, but there is now way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
+		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "That didn't help very much. You might as well wait for her to die of erosion.");
+	} else {
+		output("You level your [pc.rangedWeapon] at the creature in the distance. This is going to be a hard shot...\n\nSteady...\n\n...and...\n\n" + pc.rangedWeapon.attackVerb + "!");
+		if (pc.aim() >= 40) {
+			output("\n\nRight in the eye! The beast shrieks in pain, the walls tremble with the force of her voice, the huntresses cheer and Cerres claps you on the back!");
+			flags["CRT_HUNTRESSES_MORALE"] += 1;
+		} else {
+			output("\n\nDamn. Missed.");
+			if (!pc.isNice()) output(" It felt good to try, though.");
+		}
+		output("\n\nMeanwhile, the monster presses herself closer to the ground, vanishing completely behind her pile of rocks. Looks like you won't get another shot. You briefly consider sneaking away while the beast hides, but there is now way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
+		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "The side passage is the more realistic option.");
+	}
+}
 
 
 //----------------------------------------------------spaces-----------------------------------------------------
@@ -178,25 +209,12 @@ public function crtInitRooms():void {
 
 	//TODO: remove this
 	rooms["crtTestTele"] = new RoomClass(this);
-	rooms["crtTestTele"].roomName = "crtPlaceName";
-	rooms["crtTestTele"].description = "crtPlaceDesc";
+	rooms["crtTestTele"].roomName = "Artifical\nEntrypoint";
+	rooms["crtTestTele"].description = "This room isn't. It won't once all the other rooms will."
 	rooms["crtTestTele"].runOnEnter = null;
 	rooms["crtTestTele"].planet = "PLANET: MYRELLION";
 	rooms["crtTestTele"].system = "SYSTEM: SINDATHU";
-	rooms["crtTestTele"].westExit = "crtC4R2020";
-
-	rooms["crt000"] = new RoomClass(this);
-	rooms["crt000"].roomName = "crtPlaceName";
-	rooms["crt000"].description = "crtPlaceDesc";
-	rooms["crt000"].runOnEnter = null;
-	rooms["crt000"].planet = "PLANET: MYRELLION";
-	rooms["crt000"].system = "SYSTEM: SINDATHU";
-	rooms["crt000"].southExit = "crtTestTele";
-	rooms["crt000"].moveMinutes = 60;
-	rooms["crt000"].addFlag(GLOBAL.INDOOR);
-	rooms["crt000"].addFlag(GLOBAL.HAZARD);
-	rooms["crt000"].addFlag(GLOBAL.PUBLIC);
-	rooms["crt000"].addFlag(GLOBAL.CAVE);
+	rooms["crtTestTele"].westExit = "crtC4R2019";
 	
 	//--------Challenge 4 begins here--------
 	
@@ -217,7 +235,7 @@ public function crtInitRooms():void {
 	rooms["crtC4R2020"].addFlag(GLOBAL.OBJECTIVE);
 
 	rooms["crtC4R2021"] = new RoomClass(this);
-	rooms["crtC4R2021"].roomName = "Passage";
+	rooms["crtC4R2021"].roomName = "\nPassage";
 	rooms["crtC4R2021"].description = "A large, wide open passage.";
 	rooms["crtC4R2021"].runOnEnter = null;
 	rooms["crtC4R2021"].planet = "PLANET: MYRELLION";
@@ -231,20 +249,34 @@ public function crtInitRooms():void {
 	rooms["crtC4R2021"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2022"] = new RoomClass(this);
-	rooms["crtC4R2022"].roomName = "Passage";
+	rooms["crtC4R2022"].roomName = "\nPassage";
 	rooms["crtC4R2022"].description = "A large, wide open passage.";
 	rooms["crtC4R2022"].runOnEnter = null;
 	rooms["crtC4R2022"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2022"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2022"].southExit = "crtC4R2021";
+	rooms["crtC4R2022"].northExit = "crtC4R2023";
 	rooms["crtC4R2022"].moveMinutes = 2;
 	rooms["crtC4R2022"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2022"].addFlag(GLOBAL.HAZARD);
 	rooms["crtC4R2022"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2022"].addFlag(GLOBAL.CAVE);
 	
+	rooms["crtC4R2023"] = new RoomClass(this);
+	rooms["crtC4R2023"].roomName = "\nPassage";
+	rooms["crtC4R2023"].description = "A large, wide open passage.";
+	rooms["crtC4R2023"].runOnEnter = null;
+	rooms["crtC4R2023"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2023"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2023"].southExit = "crtC4R2022";
+	rooms["crtC4R2023"].moveMinutes = 2;
+	rooms["crtC4R2023"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2023"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC4R2023"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2023"].addFlag(GLOBAL.CAVE);
+	
 	rooms["crtC4R2019"] = new RoomClass(this);
-	rooms["crtC4R2019"].roomName = "Passage";
+	rooms["crtC4R2019"].roomName = "\nPassage";
 	rooms["crtC4R2019"].description = "A large, wide open passage.";
 	rooms["crtC4R2019"].runOnEnter = null;
 	rooms["crtC4R2019"].planet = "PLANET: MYRELLION";
@@ -258,29 +290,71 @@ public function crtInitRooms():void {
 	rooms["crtC4R2019"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2018"] = new RoomClass(this);
-	rooms["crtC4R2018"].roomName = "Passage";
+	rooms["crtC4R2018"].roomName = "\nPassage";
 	rooms["crtC4R2018"].description = "A large, wide open passage.";
 	rooms["crtC4R2018"].runOnEnter = null;
 	rooms["crtC4R2018"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2018"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2018"].northExit = "crtC4R2019";
+	rooms["crtC4R2018"].southExit = "crtC4R2017";
 	rooms["crtC4R2018"].moveMinutes = 2;
 	rooms["crtC4R2018"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2018"].addFlag(GLOBAL.HAZARD);
 	rooms["crtC4R2018"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2018"].addFlag(GLOBAL.CAVE);
 	
+	rooms["crtC4R2017"] = new RoomClass(this);
+	rooms["crtC4R2017"].roomName = "\nPassage";
+	rooms["crtC4R2017"].description = "A large, wide open passage.";
+	rooms["crtC4R2017"].runOnEnter = null;
+	rooms["crtC4R2017"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2017"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2017"].northExit = "crtC4R2018";
+	rooms["crtC4R2017"].moveMinutes = 2;
+	rooms["crtC4R2017"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2017"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC4R2017"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2017"].addFlag(GLOBAL.CAVE);
+	
 	rooms["crtC4R2120"] = new RoomClass(this);
-	rooms["crtC4R2120"].roomName = "Small Passage";
-	rooms["crtC4R2120"].description = "You narrowly escaped the beast through this tiny passage. Well, relatively tiny, anyways - you still managed to fit you ganrael friend through it.";
-	rooms["crtC4R2120"].runOnEnter = crtC4fleeTimeStamp;
+	rooms["crtC4R2120"].roomName = "\nSmall Passage";
+	rooms["crtC4R2120"].description = "You narrowly escaped the beast through this tiny passage. Well, tiny compared to the massive monstrosity outside, anyways - your ganrael friend managed to squeeze in here behind you, though it was a tight fit that left some new scratches on Iumen's carapace.\n\nThe path ahead is shrouded in darkness, unlike the large road you came from. Clearly nobody thought to plant bioluminescent mushrooms in this side passage. No matter - as Cerres points out, you do have lanterns on the supply wagon, though you won't be able to use them until Iumen is no longer stuck in the tunnel like a cork in a bottle.";
+	rooms["crtC4R2120"].runOnEnter = null;
 	rooms["crtC4R2120"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2120"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2120"].westExit = "crtC4R2020";
+	rooms["crtC4R2120"].eastExit = "crtC4R2220";
 	rooms["crtC4R2120"].moveMinutes = 2;
 	rooms["crtC4R2120"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2120"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2120"].addFlag(GLOBAL.CAVE);
+	
+	rooms["crtC4R2220"] = new RoomClass(this);
+	rooms["crtC4R2220"].roomName = "Iumen-sized\nPassage";
+	rooms["crtC4R2220"].description = "It's getting pretty cramped in here. Behind you, the path is completely filled by Iumen while the huntresses ahead of you are hesitatant to move forward into the pitch black darkness. Cerres ends up taking the lead, carefully feeling her way around using her sword's sheath as a cane.";
+	rooms["crtC4R2220"].runOnEnter = null;
+	rooms["crtC4R2220"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2220"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2220"].westExit = "crtC4R2120";
+	rooms["crtC4R2220"].eastExit = "crtC4R2320";
+	rooms["crtC4R2220"].moveMinutes = 2;
+	rooms["crtC4R2220"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2220"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2220"].addFlag(GLOBAL.CAVE);
+	
+	rooms["crtC4R2320"] = new RoomClass(this);
+	rooms["crtC4R2320"].roomName = "\nCrossroads";
+	rooms["crtC4R2320"].description = "Things are finally opening up here - your huntresses feel their way back to the cart, and after a bit of groping around they light their lanterns and things start to look a whole lot brighter - literally and figuratively.\n\nTo the west is the tight passage you came from. Probably not an option. To the east, the passage continues beyond the flickering light of the lanterns - there might be a way out there. To the south lies a somewhat larger cavern. It's a dead end, but a decent enough place to rest for a bit and get your bearings. Cerres orders the huntresses to make camp. You'll have a a little while to tend to your needs and catch up with everyone.";
+	rooms["crtC4R2320"].runOnEnter = null;
+	rooms["crtC4R2320"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2320"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2320"].westExit = "crtC4R2220";
+	//rooms["crtC4R2320"].eastExit = "crtC4R2420";
+	//rooms["crtC4R2320"].southExit = "crtC4R2320";
+	rooms["crtC4R2320"].moveMinutes = 2;
+	rooms["crtC4R2320"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2320"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2320"].addFlag(GLOBAL.CAVE);
 }
 
 
