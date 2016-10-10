@@ -77,6 +77,11 @@ public function crtInitFlags():void {
 	flags["CRT_GANRAEL_HEALTH"] = 2000;
 }
 
+public function crtC4MakeCamp():void {
+	flags["CRT_C4_CAMP_MADE"] = 1;
+	//TODO: add npcs to rooms etc.
+}
+
 
 
 //----------------------------------------------------dialog-----------------------------------------------------
@@ -99,7 +104,7 @@ public function crtPrep():void {
 	showName("\nCERRES");
 	author("Quilen")
 
-	//TODO
+	//TODO: needs flavor
 	output("<i>“Ready to go on an adventure?”</i>");
 	
 	clearMenu();
@@ -111,7 +116,7 @@ public function crtPrep():void {
 public function crtLeaveTown():void {
 	clearOutput();
 	crtInitFlags();
-	//TODO
+	//TODO: needs flavor
 	output("Descrition of how your journey starts.");
 	currentLocation = "crtTestTele";
 	clearMenu();
@@ -124,6 +129,7 @@ public function crtLeaveTown():void {
 public function crtC4horrifyingMonster():Boolean {
 	clearOutput();
 	clearMenu();
+	author("Quilen")
 	if (flags["CRT_C4_FLEE_TIMESTAMP"] == undefined) flags["CRT_C4_FLEE_TIMESTAMP"] = GetGameTimestamp();
 	
 	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) && flags["CRT_C4_SHOT_TAKEN"] == undefined ) {
@@ -155,6 +161,7 @@ public function crtC4horrifyingMonsterGoBack():void {
 public function crtC4horrifyingMonsterTakeShot():void {
 	clearOutput();
 	clearMenu();
+	author("Quilen")
 	flags["CRT_C4_SHOT_TAKEN"] = 1;
 
 	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) ) {
@@ -173,6 +180,53 @@ public function crtC4horrifyingMonsterTakeShot():void {
 		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "The side passage is the more realistic option.");
 	}
 }
+
+public function crtC4R2120RoomDesc():void {
+	author("Quilen")
+	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
+		output("You narrowly escaped the beast through this tiny passage. Well, tiny compared to the massive monstrosity outside, anyways - your ganrael friend managed to squeeze in here behind you, though it was a tight fit that left some new scratches on Iumen's carapace.\n\nThe path ahead is shrouded in darkness, unlike the large road you came from. Clearly nobody thought to plant bioluminescent mushrooms in this side passage. No matter - as Cerres points out, you do have lanterns on the supply wagon, though you won't be able to use them until Iumen is no longer stuck in the tunnel like a cork in a bottle.");
+	} else {
+		output("You carefully make your way through the dark tunnel back to where you escaped the beast. Maybe she gave up her chase and you can leave through where you came from?");
+	}
+}
+
+public function crtC4R2220RoomDesc():void {
+	author("Quilen")
+	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
+		if (pc.intelligence() >= 7) {
+			output("It's getting pretty cramped in here. Behind you, the path is completely filled by Iumen while the huntresses ahead of you are hesitatant to move forward into the pitch black darkness. You remember that your codex has a pretty bright screen and use it to light the way. The huntresses appreciate it and regain some of their confidence.");
+			flags["CRT_HUNTRESSES_MORALE"] += 1;
+		} else {
+			output("It's getting pretty cramped in here. Behind you, the path is completely filled by Iumen while the huntresses ahead of you are hesitatant to move forward into the pitch black darkness. Cerres ends up taking the lead, carefully feeling her way around using her sword's sheath as a cane.");
+		}
+	} else {
+		output("One of the huntresses set up a lantern to cover this area. Now that you have some more light and aren't under time pressure, you examine the tunnel a little more closely. It is made of the same white-grey rock as the surrounding area, but instead of being smooth as if worn down by time it is full of jagged edges, like large plates of stone were broken away with great force. Some rock splinters still lie on the ground, and you think you now know where the pile of stones back at the camp came from. Someone made this tunnel with primitive tools, though it's hard to tell if that was decades or weeks ago.");
+	}
+}
+
+public function crtC4R2320RoomDesc():void {
+	author("Quilen")
+	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
+		if (pc.intelligence() >= 7) {
+			output("Things are finally opening up here - your huntresses quickly circle around to the cart, grab their lanterns and start illuminating the surrounding area.\n\nTo the west is the tight passage you came from. To the east, the passage continues beyond the flickering light of the lanterns - there might be a way out there. To the south lies a somewhat larger cavern made of smooth stone. It's a dead end, but a decent enough place to rest for a bit and get your bearings. Cerres orders the huntresses to make camp. You'll have a a little while to tend to your needs and catch up with everyone before you have to find a way out.");
+		} else {
+			output("Things are finally opening up here - your huntresses feel their way back to the cart and after a bit of groping around they light their lanterns and things start to look a whole lot brighter - literally and figuratively.\n\nTo the west is the tight passage you came from. To the east, the passage continues beyond the flickering light of the lanterns - there might be a way out there. To the south lies a somewhat larger cavern made of smooth stone. It's a dead end, but a decent enough place to rest for a bit and get your bearings. Cerres orders the huntresses to make camp. You'll have a a little while to tend to your needs and catch up with everyone before you have to find a way out.");
+		}
+		crtC4MakeCamp()
+	} else {
+		output("The passage you came from continues here from west to east. To the south is the cavern where you made camp. The huntresses have placed their lanterns so that every inch of it is brightly lit.");
+	}
+}
+
+public function crtC4R2420RoomDesc():void {
+	author("Quilen")
+	output("The roughly hewn passage continues to the east until it opens up into another cavern. This place must look like swiss cheese...\n\nYou shine a light into the cavern and see that there are two exits on the other end and a large pile of rocks near the entrance. There's a drop halfway through - nothing too big, but it will be hard to get the wagon down there and you don't even want to think about getting it back up.");
+	if (pc.intelligence() >= 10) {
+		output(" Still, the rocks imply that the passage was made from this side, so there should be some way out over there.");
+	}
+	output(" You dont't see a lot of other options.");
+}
+
 
 
 //----------------------------------------------------spaces-----------------------------------------------------
@@ -207,7 +261,7 @@ public function crtC4horrifyingMonsterTakeShot():void {
 
 public function crtInitRooms():void {
 
-	//TODO: remove this
+	//TODO: remove debug/dev room
 	rooms["crtTestTele"] = new RoomClass(this);
 	rooms["crtTestTele"].roomName = "Artifical\nEntrypoint";
 	rooms["crtTestTele"].description = "This room isn't. It won't once all the other rooms will."
@@ -318,8 +372,8 @@ public function crtInitRooms():void {
 	
 	rooms["crtC4R2120"] = new RoomClass(this);
 	rooms["crtC4R2120"].roomName = "\nSmall Passage";
-	rooms["crtC4R2120"].description = "You narrowly escaped the beast through this tiny passage. Well, tiny compared to the massive monstrosity outside, anyways - your ganrael friend managed to squeeze in here behind you, though it was a tight fit that left some new scratches on Iumen's carapace.\n\nThe path ahead is shrouded in darkness, unlike the large road you came from. Clearly nobody thought to plant bioluminescent mushrooms in this side passage. No matter - as Cerres points out, you do have lanterns on the supply wagon, though you won't be able to use them until Iumen is no longer stuck in the tunnel like a cork in a bottle.";
-	rooms["crtC4R2120"].runOnEnter = null;
+	rooms["crtC4R2120"].description = "";
+	rooms["crtC4R2120"].runOnEnter = crtC4R2120RoomDesc;
 	rooms["crtC4R2120"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2120"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2120"].westExit = "crtC4R2020";
@@ -331,8 +385,8 @@ public function crtInitRooms():void {
 	
 	rooms["crtC4R2220"] = new RoomClass(this);
 	rooms["crtC4R2220"].roomName = "Iumen-sized\nPassage";
-	rooms["crtC4R2220"].description = "It's getting pretty cramped in here. Behind you, the path is completely filled by Iumen while the huntresses ahead of you are hesitatant to move forward into the pitch black darkness. Cerres ends up taking the lead, carefully feeling her way around using her sword's sheath as a cane.";
-	rooms["crtC4R2220"].runOnEnter = null;
+	rooms["crtC4R2220"].description = "";
+	rooms["crtC4R2220"].runOnEnter = crtC4R2220RoomDesc;
 	rooms["crtC4R2220"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2220"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2220"].westExit = "crtC4R2120";
@@ -344,17 +398,43 @@ public function crtInitRooms():void {
 	
 	rooms["crtC4R2320"] = new RoomClass(this);
 	rooms["crtC4R2320"].roomName = "\nCrossroads";
-	rooms["crtC4R2320"].description = "Things are finally opening up here - your huntresses feel their way back to the cart, and after a bit of groping around they light their lanterns and things start to look a whole lot brighter - literally and figuratively.\n\nTo the west is the tight passage you came from. Probably not an option. To the east, the passage continues beyond the flickering light of the lanterns - there might be a way out there. To the south lies a somewhat larger cavern. It's a dead end, but a decent enough place to rest for a bit and get your bearings. Cerres orders the huntresses to make camp. You'll have a a little while to tend to your needs and catch up with everyone.";
-	rooms["crtC4R2320"].runOnEnter = null;
+	rooms["crtC4R2320"].description = "";
+	rooms["crtC4R2320"].runOnEnter = crtC4R2320RoomDesc;
 	rooms["crtC4R2320"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2320"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2320"].westExit = "crtC4R2220";
-	//rooms["crtC4R2320"].eastExit = "crtC4R2420";
-	//rooms["crtC4R2320"].southExit = "crtC4R2320";
+	rooms["crtC4R2320"].eastExit = "crtC4R2420";
+	rooms["crtC4R2320"].southExit = "crtC4R2319";
 	rooms["crtC4R2320"].moveMinutes = 2;
 	rooms["crtC4R2320"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2320"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2320"].addFlag(GLOBAL.CAVE);
+	
+	rooms["crtC4R2420"] = new RoomClass(this);
+	rooms["crtC4R2420"].roomName = "Jagged\nPassage";
+	rooms["crtC4R2420"].description = "";
+	rooms["crtC4R2420"].runOnEnter = crtC4R2420RoomDesc;
+	rooms["crtC4R2420"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2420"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2420"].westExit = "crtC4R2320";
+	//rooms["crtC4R2420"].eastExit = "crtC4R2520";
+	rooms["crtC4R2420"].moveMinutes = 2;
+	rooms["crtC4R2420"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2420"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2420"].addFlag(GLOBAL.CAVE);
+	
+	rooms["crtC4R2319"] = new RoomClass(this);
+	rooms["crtC4R2319"].roomName = "\nCavern";
+	rooms["crtC4R2319"].description = "TODO";
+	rooms["crtC4R2319"].runOnEnter = null;
+	rooms["crtC4R2319"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2319"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2319"].northExit = "crtC4R2320";
+	//rooms["crtC4R2319"].southExit = "crtC4R2318";
+	rooms["crtC4R2319"].moveMinutes = 2;
+	rooms["crtC4R2319"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2319"].addFlag(GLOBAL.PUBLIC);
+	rooms["crtC4R2319"].addFlag(GLOBAL.CAVE);
 }
 
 
