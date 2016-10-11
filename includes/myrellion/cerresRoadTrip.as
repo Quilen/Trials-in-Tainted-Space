@@ -133,11 +133,13 @@ public function crtC4horrifyingMonster():Boolean {
 	if (flags["CRT_C4_FLEE_TIMESTAMP"] == undefined) flags["CRT_C4_FLEE_TIMESTAMP"] = GetGameTimestamp();
 	
 	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) && flags["CRT_C4_SHOT_TAKEN"] == undefined ) {
-		output("The terrifying monstrosity still looks pissed from your last encounter. She paces up and down next to the diminutive passage you escaped through, her footfalls massive and forceful as thunder.\n\nIt's probably better not to go out yet, lest you end up a ");
+		output("The terrifying monstrosity is still there and she still looks pissed from your last encounter. She paces up and down next to the diminutive passage you escaped through, her footfalls massive and forceful as thunder.\n\nIt's probably better not to go out yet, lest you end up a ");
 		if (pc.armor.defense >= 3) output("crunchy ");
 		output("snack for this beast.");
+	} else if (flags["CRT_C4_SHOT_TAKEN"] != undefined) {
+		output("You slowly and carefully peek your head out to look for the beast.\n\nYou can't see her, but you just <i>know</i> that she hasn't given up. Not after your previous fights.");
 	} else {
-		output("You slowly and carefully peek your head out to see if the beast has left in the meantime.\n\nAt first you don't see anything, but upon a closer look you spot the malicious, vengeful glimmer of her eyes in the distance, half hidden behind a bunch of rocks. From afar, the creature is easy to mistake for lifeless scenery - no wonder you ended up in your current predicament...\n\nEither way, it doesn't look like this tenacious terror is going to get tired of hunting you any time soon. You'd better find another way out of here.");
+		output("You slowly and carefully peek your head out to see if the beast has left in the meantime.\n\nAt first you don't see anything, but upon a closer look you spot the malicious, vengeful glimmer of her eyes in the distance, half hidden behind a rock formation. From afar, the creature is easy to mistake for lifeless scenery - no wonder you ended up in your current predicament...\n\nEither way, it doesn't look like this tenacious terror is going to get tired of hunting you any time soon. You'd better find another way out of here.");
 	}
 	clearMenu();
 	addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "This creature is too tough a nut to crack.");
@@ -168,15 +170,17 @@ public function crtC4horrifyingMonsterTakeShot():void {
 		output("The monstrosity is an easy target, big as a barn and clomping around only meters away. You level your [pc.rangedWeapon] at her and " + pc.rangedWeapon.attackVerb + "! And hit!\n\n...And it didn't do very much.\n\nStill, you'll grind her down. Or so you think, anyways, but after a couple more hits the beast jumps behind an massive rock formation, landing with a <i>THUMP</i> that shakes the ground under you.\n\nLooks like you won't be able to " + pc.rangedWeapon.attackVerb + " her to death over the course of the next few hours, after all.\n\nYou briefly consider sneaking away while the beast hides, but there is now way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
 		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "That didn't help very much. You might as well wait for her to die of erosion.");
 	} else {
-		output("You level your [pc.rangedWeapon] at the creature in the distance. This is going to be a hard shot...\n\nSteady...\n\n...and...\n\n" + pc.rangedWeapon.attackVerb + "!");
+		output("You level your [pc.rangedWeapon] at the creature in the distance. This is going to be a hard shot...\n\nSteady...\n\n...and...\n\n..." + pc.rangedWeapon.attackVerb + "!");
 		if (pc.aim() >= 40) {
-			output("\n\nRight in the eye! The beast shrieks in pain, the walls tremble with the force of her voice, the huntresses cheer and Cerres claps you on the back!");
+			output("\n\nRight in the eye! The beast shrieks in pain, the huntresses cheer and Cerres claps you on the back!");
 			flags["CRT_HUNTRESSES_MORALE"] += 1;
+			output("\n\nThe wounded beast scrabbles backwards further into the rock formation before roaring out her now very personal hatred for you.");
 		} else {
 			output("\n\nDamn. Missed.");
-			if (!pc.isNice()) output(" It felt good to try, though.");
+			if (pc.isAss()) output(" You wanted to hurt that fucker so badly.");
+			output("\n\nThe beast gives you a nasty stare before retreating a little further into the rocks.);
 		}
-		output("\n\nMeanwhile, the monster presses herself closer to the ground, vanishing completely behind her pile of rocks. Looks like you won't get another shot. You briefly consider sneaking away while the beast hides, but there is now way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
+		output(" Looks like you won't get another shot. You briefly consider sneaking away while the beast hides, but there is now way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
 		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "The side passage is the more realistic option.");
 	}
 }
@@ -200,7 +204,7 @@ public function crtC4R2220RoomDesc():void {
 			output("It's getting pretty cramped in here. Behind you, the path is completely filled by Iumen while the huntresses ahead of you are hesitatant to move forward into the pitch black darkness. Cerres ends up taking the lead, carefully feeling her way around using her sword's sheath as a cane.");
 		}
 	} else {
-		output("One of the huntresses set up a lantern to cover this area. Now that you have some more light and aren't under time pressure, you examine the tunnel a little more closely. It is made of the same white-grey rock as the surrounding area, but instead of being smooth as if worn down by time it is full of jagged edges, like large plates of stone were broken away with great force. Some rock splinters still lie on the ground, and you think you now know where the pile of stones back at the camp came from. Someone made this tunnel with primitive tools, though it's hard to tell if that was decades or weeks ago.");
+		output("Now that you have some more light and aren't under time pressure, you examine the tunnel a little more closely. It is made of the same white-grey stone as the cavern, but instead of being smoothly worn down by time it is full of jagged edges, as though large plates of rock were broken away with great force. Some rock splinters still lie on the ground, and you think you now know where the pile of stones back at the camp came from. Someone made this tunnel with primitive tools, though it's hard to tell if that was decades or weeks ago.");
 	}
 }
 
@@ -257,6 +261,10 @@ public function crtC4R2420RoomDesc():void {
 	rooms[""].addFlag(GLOBAL.LIFTUP);
 	rooms[""].addFlag(GLOBAL.MEDICAL);
 	rooms[""].addFlag(GLOBAL.NOFAP);
+	rooms[""].addFlag(GLOBAL.BED);
+	rooms[""].addFlag(GLOBAL.SHIPHANGAR);
+	rooms[""].addFlag(GLOBAL.TAXI);
+	rooms[""].addFlag(GLOBAL.QUEST);
 */
 
 public function crtInitRooms():void {
@@ -273,7 +281,7 @@ public function crtInitRooms():void {
 	//--------Challenge 4 begins here--------
 	
 	rooms["crtC4R2020"] = new RoomClass(this);
-	rooms["crtC4R2020"].roomName = "Horrifying\nMonster";
+	rooms["crtC4R2020"].roomName = "HORRIFYING\nMONSTER";
 	rooms["crtC4R2020"].description = "";
 	rooms["crtC4R2020"].runOnEnter = crtC4horrifyingMonster;
 	rooms["crtC4R2020"].planet = "PLANET: MYRELLION";
@@ -284,12 +292,11 @@ public function crtInitRooms():void {
 	rooms["crtC4R2020"].moveMinutes = 2;
 	rooms["crtC4R2020"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2020"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2020"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2020"].addFlag(GLOBAL.CAVE);
-	rooms["crtC4R2020"].addFlag(GLOBAL.OBJECTIVE);
+	rooms["crtC4R2020"].addFlag(GLOBAL.QUEST);
 
 	rooms["crtC4R2021"] = new RoomClass(this);
-	rooms["crtC4R2021"].roomName = "\nPassage";
+	rooms["crtC4R2021"].roomName = "MAIN\nROAD";
 	rooms["crtC4R2021"].description = "A large, wide open passage.";
 	rooms["crtC4R2021"].runOnEnter = null;
 	rooms["crtC4R2021"].planet = "PLANET: MYRELLION";
@@ -299,11 +306,10 @@ public function crtInitRooms():void {
 	rooms["crtC4R2021"].moveMinutes = 2;
 	rooms["crtC4R2021"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2021"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2021"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2021"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2022"] = new RoomClass(this);
-	rooms["crtC4R2022"].roomName = "\nPassage";
+	rooms["crtC4R2022"].roomName = "MAIN\nROAD";
 	rooms["crtC4R2022"].description = "A large, wide open passage.";
 	rooms["crtC4R2022"].runOnEnter = null;
 	rooms["crtC4R2022"].planet = "PLANET: MYRELLION";
@@ -313,11 +319,10 @@ public function crtInitRooms():void {
 	rooms["crtC4R2022"].moveMinutes = 2;
 	rooms["crtC4R2022"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2022"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2022"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2022"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2023"] = new RoomClass(this);
-	rooms["crtC4R2023"].roomName = "\nPassage";
+	rooms["crtC4R2023"].roomName = "MAIN\nROAD";
 	rooms["crtC4R2023"].description = "A large, wide open passage.";
 	rooms["crtC4R2023"].runOnEnter = null;
 	rooms["crtC4R2023"].planet = "PLANET: MYRELLION";
@@ -326,11 +331,10 @@ public function crtInitRooms():void {
 	rooms["crtC4R2023"].moveMinutes = 2;
 	rooms["crtC4R2023"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2023"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2023"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2023"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2019"] = new RoomClass(this);
-	rooms["crtC4R2019"].roomName = "\nPassage";
+	rooms["crtC4R2019"].roomName = "MAIN\nROAD";
 	rooms["crtC4R2019"].description = "A large, wide open passage.";
 	rooms["crtC4R2019"].runOnEnter = null;
 	rooms["crtC4R2019"].planet = "PLANET: MYRELLION";
@@ -340,11 +344,10 @@ public function crtInitRooms():void {
 	rooms["crtC4R2019"].moveMinutes = 2;
 	rooms["crtC4R2019"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2019"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2019"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2019"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2018"] = new RoomClass(this);
-	rooms["crtC4R2018"].roomName = "\nPassage";
+	rooms["crtC4R2018"].roomName = "MAIN\nROAD";
 	rooms["crtC4R2018"].description = "A large, wide open passage.";
 	rooms["crtC4R2018"].runOnEnter = null;
 	rooms["crtC4R2018"].planet = "PLANET: MYRELLION";
@@ -354,11 +357,10 @@ public function crtInitRooms():void {
 	rooms["crtC4R2018"].moveMinutes = 2;
 	rooms["crtC4R2018"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2018"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2018"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2018"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2017"] = new RoomClass(this);
-	rooms["crtC4R2017"].roomName = "\nPassage";
+	rooms["crtC4R2017"].roomName = "MAIN\nROAD";
 	rooms["crtC4R2017"].description = "A large, wide open passage.";
 	rooms["crtC4R2017"].runOnEnter = null;
 	rooms["crtC4R2017"].planet = "PLANET: MYRELLION";
@@ -367,11 +369,10 @@ public function crtInitRooms():void {
 	rooms["crtC4R2017"].moveMinutes = 2;
 	rooms["crtC4R2017"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2017"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2017"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2017"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2120"] = new RoomClass(this);
-	rooms["crtC4R2120"].roomName = "\nSmall Passage";
+	rooms["crtC4R2120"].roomName = "CAVE\nMOUTH";
 	rooms["crtC4R2120"].description = "";
 	rooms["crtC4R2120"].runOnEnter = crtC4R2120RoomDesc;
 	rooms["crtC4R2120"].planet = "PLANET: MYRELLION";
@@ -380,11 +381,10 @@ public function crtInitRooms():void {
 	rooms["crtC4R2120"].eastExit = "crtC4R2220";
 	rooms["crtC4R2120"].moveMinutes = 2;
 	rooms["crtC4R2120"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2120"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2120"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2220"] = new RoomClass(this);
-	rooms["crtC4R2220"].roomName = "Iumen-sized\nPassage";
+	rooms["crtC4R2220"].roomName = "NARROW\nPASSAGE";
 	rooms["crtC4R2220"].description = "";
 	rooms["crtC4R2220"].runOnEnter = crtC4R2220RoomDesc;
 	rooms["crtC4R2220"].planet = "PLANET: MYRELLION";
@@ -393,11 +393,10 @@ public function crtInitRooms():void {
 	rooms["crtC4R2220"].eastExit = "crtC4R2320";
 	rooms["crtC4R2220"].moveMinutes = 2;
 	rooms["crtC4R2220"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2220"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2220"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2320"] = new RoomClass(this);
-	rooms["crtC4R2320"].roomName = "\nCrossroads";
+	rooms["crtC4R2320"].roomName = "\nCROSSROADS";
 	rooms["crtC4R2320"].description = "";
 	rooms["crtC4R2320"].runOnEnter = crtC4R2320RoomDesc;
 	rooms["crtC4R2320"].planet = "PLANET: MYRELLION";
@@ -407,11 +406,10 @@ public function crtInitRooms():void {
 	rooms["crtC4R2320"].southExit = "crtC4R2319";
 	rooms["crtC4R2320"].moveMinutes = 2;
 	rooms["crtC4R2320"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2320"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2320"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2420"] = new RoomClass(this);
-	rooms["crtC4R2420"].roomName = "Jagged\nPassage";
+	rooms["crtC4R2420"].roomName = "JAGGED\nPASSAGE";
 	rooms["crtC4R2420"].description = "";
 	rooms["crtC4R2420"].runOnEnter = crtC4R2420RoomDesc;
 	rooms["crtC4R2420"].planet = "PLANET: MYRELLION";
@@ -420,21 +418,43 @@ public function crtInitRooms():void {
 	//rooms["crtC4R2420"].eastExit = "crtC4R2520";
 	rooms["crtC4R2420"].moveMinutes = 2;
 	rooms["crtC4R2420"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2420"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2420"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2319"] = new RoomClass(this);
-	rooms["crtC4R2319"].roomName = "\nCavern";
+	rooms["crtC4R2319"].roomName = "CAVERN\nNORTH";
 	rooms["crtC4R2319"].description = "TODO";
 	rooms["crtC4R2319"].runOnEnter = null;
 	rooms["crtC4R2319"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2319"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2319"].northExit = "crtC4R2320";
-	//rooms["crtC4R2319"].southExit = "crtC4R2318";
+	rooms["crtC4R2319"].southExit = "crtC4R2318";
 	rooms["crtC4R2319"].moveMinutes = 2;
 	rooms["crtC4R2319"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2319"].addFlag(GLOBAL.PUBLIC);
 	rooms["crtC4R2319"].addFlag(GLOBAL.CAVE);
+	
+	rooms["crtC4R2318"] = new RoomClass(this);
+	rooms["crtC4R2318"].roomName = "CAVERN\nSOUTH";
+	rooms["crtC4R2318"].description = "TODO";
+	rooms["crtC4R2318"].runOnEnter = null;
+	rooms["crtC4R2318"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2318"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2318"].northExit = "crtC4R2319";
+	rooms["crtC4R2318"].westExit = "crtC4R2218";
+	rooms["crtC4R2318"].moveMinutes = 2;
+	rooms["crtC4R2318"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2318"].addFlag(GLOBAL.CAVE);
+	
+	rooms["crtC4R2218"] = new RoomClass(this);
+	rooms["crtC4R2218"].roomName = "SECLUDED\nSPOT";
+	rooms["crtC4R2218"].description = "TODO";
+	rooms["crtC4R2218"].runOnEnter = null;
+	rooms["crtC4R2218"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2218"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2218"].eastExit = "crtC4R2318";
+	rooms["crtC4R2218"].moveMinutes = 2;
+	rooms["crtC4R2218"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2218"].addFlag(GLOBAL.CAVE);
+	rooms["crtC4R2218"].addFlag(GLOBAL.BED);
 }
 
 
