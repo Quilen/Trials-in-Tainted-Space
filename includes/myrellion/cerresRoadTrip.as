@@ -4,7 +4,7 @@ import classes.RoomClass;
 /*----------------------------------------------------outline----------------------------------------------------
 Two weeks after becoming nyrea royal, the player encounters a bunch of activity while collecting their spoils - Queensguard Cerres is preparing a punitive expedition against another tribe that kidnapped some of their males.
 The player comes along for a ~2 weeks odyssey to get them back, potentially getting to know Cerres and some of the nyrea better in the process.
-They will face seven challenges on the way there, one big challenge to rescue the kidnapped males, and a few more challenges as they make their way back, pursued by the hostile tribe.
+They will face like four or five challenges on the way there, one big challenge to rescue the kidnapped males, and a few more challenges as they make their way back, pursued by the hostile tribe.
 
 Companions:
 	-Queensguard Cerres (super loyal, very formal until she knows you better)
@@ -52,6 +52,7 @@ Challenges on the way there:
 		-minotaur-like creature hunts you (or maybe a dragon-person with a hoard)
 			-attacks directly if someone get's seperated from the group, else stalks you audibly
 		-challenge resolved when player finds the exit
+	5. Deal with a scout from the enemy tribe
 
 Callenges there:
 
@@ -79,7 +80,8 @@ public function crtInitFlags():void {
 
 public function crtC4MakeCamp():void {
 	flags["CRT_C4_CAMP_MADE"] = 1;
-	//TODO: add npcs to rooms etc.
+	rooms["crtC4R2319"].addFlag(GLOBAL.COMMERCE);
+	rooms["crtC4R2318"].addFlag(GLOBAL.NPC);
 }
 
 
@@ -132,7 +134,9 @@ public function crtC4horrifyingMonster():Boolean {
 	author("Quilen")
 	if (flags["CRT_C4_FLEE_TIMESTAMP"] == undefined) flags["CRT_C4_FLEE_TIMESTAMP"] = GetGameTimestamp();
 	
-	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) && flags["CRT_C4_SHOT_TAKEN"] == undefined ) {
+	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
+		output("You can't turn around right now. The tunnel behind you is completely filled by Iumen and you can't demand he crawl ass first into the monster's mouth.");
+	} else if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) && flags["CRT_C4_SHOT_TAKEN"] == undefined ) {
 		output("The terrifying monstrosity is still there and she still looks pissed from your last encounter. She paces up and down next to the diminutive passage you escaped through, her footfalls massive and forceful as thunder.\n\nIt's probably better not to go out yet, lest you end up a ");
 		if (pc.armor.defense >= 3) output("crunchy ");
 		output("snack for this beast.");
@@ -142,14 +146,18 @@ public function crtC4horrifyingMonster():Boolean {
 		output("You slowly and carefully peek your head out to see if the beast has left in the meantime.\n\nAt first you don't see anything, but upon a closer look you spot the malicious, vengeful glimmer of her eyes in the distance, half hidden behind a rock formation. From afar, the creature is easy to mistake for lifeless scenery - no wonder you ended up in your current predicament...\n\nEither way, it doesn't look like this tenacious terror is going to get tired of hunting you any time soon. You'd better find another way out of here.");
 	}
 	clearMenu();
-	addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "This creature is too tough a nut to crack.");
-	if (flags["CRT_C4_SHOT_TAKEN"] == undefined && !(pc.meleeWeapon is EmptySlot)) {
-		addButton(1, "Shoot", crtC4horrifyingMonsterTakeShot, undefined, "Shoot", "The monster can't reach you! You can shoot her until she dies or runs off!");
+	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
+		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack);
 	} else {
-		if (!(pc.meleeWeapon is EmptySlot)) {
-			addDisabledButton(1, "Shoot", "Shoot", "You have no reason to assume that you would get her this time. No point wasting ammunition.");
+		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "This creature is too tough a nut to crack.");
+		if (flags["CRT_C4_SHOT_TAKEN"] == undefined && !(pc.meleeWeapon is EmptySlot)) {
+			addButton(1, "Shoot", crtC4horrifyingMonsterTakeShot, undefined, "Shoot", "The monster can't reach you! You can shoot her until she dies or runs off!");
 		} else {
-			addDisabledButton(1, "Shoot", "Shoot", "You don't even <i>have</i> a ranged weapon...");
+			if (!(pc.meleeWeapon is EmptySlot)) {
+				addDisabledButton(1, "Shoot", "Shoot", "You have no reason to assume that you would get her this time. No point wasting ammunition.");
+			} else {
+				addDisabledButton(1, "Shoot", "Shoot", "You don't even <i>have</i> a ranged weapon...");
+			}
 		}
 	}
 	return true;
@@ -167,20 +175,18 @@ public function crtC4horrifyingMonsterTakeShot():void {
 	flags["CRT_C4_SHOT_TAKEN"] = 1;
 
 	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) ) {
-		output("The monstrosity is an easy target, big as a barn and clomping around only meters away. You level your [pc.rangedWeapon] at her and " + pc.rangedWeapon.attackVerb + "! And hit!\n\n...And it didn't do very much.\n\nStill, you'll grind her down. Or so you think, anyways, but after a couple more hits the beast jumps behind an massive rock formation, landing with a <i>THUMP</i> that shakes the ground under you.\n\nLooks like you won't be able to " + pc.rangedWeapon.attackVerb + " her to death over the course of the next few hours, after all.\n\nYou briefly consider sneaking away while the beast hides, but there is now way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
+		output("The monstrosity is an easy target, big as a barn and clomping around only meters away. You level your [pc.rangedWeapon] at her and " + pc.rangedWeapon.attackVerb + "! And hit!\n\n...And it didn't do very much.\n\nStill, you can keep " + pc.rangedWeapon.attackVerb + "ing her until she finally succumbs to her injuries. Maybe. After a couple more hits the beast jumps behind an massive rock formation, landing with a <i>THUMP</i> that shakes the ground under you. Looks like you won't get another shot. You briefly consider sneaking away while the beast hides, but there is no way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
 		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "That didn't help very much. You might as well wait for her to die of erosion.");
 	} else {
 		output("You level your [pc.rangedWeapon] at the creature in the distance. This is going to be a hard shot...\n\nSteady...\n\n...and...\n\n..." + pc.rangedWeapon.attackVerb + "!");
 		if (pc.aim() >= 40) {
-			output("\n\nRight in the eye! The beast shrieks in pain, the huntresses cheer and Cerres claps you on the back!");
-			flags["CRT_HUNTRESSES_MORALE"] += 1;
-			output("\n\nThe wounded beast scrabbles backwards further into the rock formation before roaring out her now very personal hatred for you.");
+			output("\n\nRight in the eye! The beast shrieks in pain and almost panicly scrabbles backwards further into the rock formation before roaring out her now very personal hatred for you.");
 		} else {
 			output("\n\nDamn. Missed.");
 			if (pc.isAss()) output(" You wanted to hurt that fucker so badly.");
-			output("\n\nThe beast gives you a nasty stare before retreating a little further into the rocks.);
+			output("\n\nThe beast gives you a nasty stare before retreating a little further into the rocks.");
 		}
-		output(" Looks like you won't get another shot. You briefly consider sneaking away while the beast hides, but there is now way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
+		output(" Looks like you won't get another shot. You briefly consider sneaking away while the beast hides, but there is no way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
 		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "The side passage is the more realistic option.");
 	}
 }
@@ -222,15 +228,45 @@ public function crtC4R2320RoomDesc():void {
 	}
 }
 
-public function crtC4R2420RoomDesc():void {
+public function crtC4R2520RoomDesc():void {
 	author("Quilen")
-	output("The roughly hewn passage continues to the east until it opens up into another cavern. This place must look like swiss cheese...\n\nYou shine a light into the cavern and see that there are two exits on the other end and a large pile of rocks near the entrance. There's a drop halfway through - nothing too big, but it will be hard to get the wagon down there and you don't even want to think about getting it back up.");
+	output("You shine a light into the cavern and see an exit on the other end, as well as a large pile of rocks near the entrance. There's a drop halfway through - nothing too big, but it will be hard to get the wagon down there and you don't even want to think about getting it back up.");
 	if (pc.intelligence() >= 10) {
 		output(" Still, the rocks imply that the passage was made from this side, so there should be some way out over there.");
+	} else {
+		output(" Still better than the mouth of a giant monster.");
 	}
-	output(" You dont't see a lot of other options.");
 }
 
+public function crtC4R2319RoomDesc():void {
+	author("Quilen")
+	output("The cavern is at its most spacious here, a good five meters across. Iumen has rolled up across its width, blocking most of it with his armor. Two huntresses look watchfully past him.");
+	addButton(0, "Iumen", crtC4CampIumen, undefined, "Iumen", "Check up on the large ganrael.")
+}
+
+public function crtC4CampIumen():Boolean {
+	clearMenu();
+	clearOutput();
+	author("Quilen")
+	output("TODO");
+	addButton(14, "Back", mainGameMenu);
+	return true;
+}
+
+public function crtC4R2318RoomDesc():void {
+	author("Quilen")
+	output("TODO small campfire");
+	addButton(0, "Campfire", crtC4CampFire, undefined, "Campfire", "Talk to the nyrea that have gathered around the campfire.")
+}
+
+public function crtC4CampFire():Boolean {
+	clearMenu();
+	clearOutput();
+	author("Quilen")
+	output("TODO");
+	addButton(14, "Back", mainGameMenu);
+	return true;
+}
 
 
 //----------------------------------------------------spaces-----------------------------------------------------
@@ -276,7 +312,7 @@ public function crtInitRooms():void {
 	rooms["crtTestTele"].runOnEnter = null;
 	rooms["crtTestTele"].planet = "PLANET: MYRELLION";
 	rooms["crtTestTele"].system = "SYSTEM: SINDATHU";
-	rooms["crtTestTele"].westExit = "crtC4R2019";
+	rooms["crtTestTele"].northExit = "crtC4R2120";
 	
 	//--------Challenge 4 begins here--------
 	
@@ -410,20 +446,34 @@ public function crtInitRooms():void {
 	
 	rooms["crtC4R2420"] = new RoomClass(this);
 	rooms["crtC4R2420"].roomName = "JAGGED\nPASSAGE";
-	rooms["crtC4R2420"].description = "";
-	rooms["crtC4R2420"].runOnEnter = crtC4R2420RoomDesc;
+	rooms["crtC4R2420"].description = "The roughly hewn passage continues to the east until it opens up into another cavern. This place must look like swiss cheese...";
+	rooms["crtC4R2420"].runOnEnter = null;
 	rooms["crtC4R2420"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2420"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2420"].westExit = "crtC4R2320";
-	//rooms["crtC4R2420"].eastExit = "crtC4R2520";
+	rooms["crtC4R2420"].eastExit = "crtC4R2520";
 	rooms["crtC4R2420"].moveMinutes = 2;
 	rooms["crtC4R2420"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2420"].addFlag(GLOBAL.CAVE);
 	
+	rooms["crtC4R2520"] = new RoomClass(this);
+	rooms["crtC4R2520"].roomName = "NATURAL\nCAVERN";
+	rooms["crtC4R2520"].description = "";
+	rooms["crtC4R2520"].runOnEnter = crtC4R2520RoomDesc;
+	rooms["crtC4R2520"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2520"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2520"].westExit = "crtC4R2420";
+	//rooms["crtC4R2520"].eastExit = "crtC4R2620";
+	rooms["crtC4R2520"].moveMinutes = 2;
+	rooms["crtC4R2520"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2520"].addFlag(GLOBAL.CAVE);
+	rooms["crtC4R2520"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC4R2520"].addFlag(GLOBAL.OBJECTIVE);
+	
 	rooms["crtC4R2319"] = new RoomClass(this);
 	rooms["crtC4R2319"].roomName = "CAVERN\nNORTH";
-	rooms["crtC4R2319"].description = "TODO";
-	rooms["crtC4R2319"].runOnEnter = null;
+	rooms["crtC4R2319"].description = "";
+	rooms["crtC4R2319"].runOnEnter = crtC4R2319RoomDesc;
 	rooms["crtC4R2319"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2319"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2319"].northExit = "crtC4R2320";
@@ -434,8 +484,8 @@ public function crtInitRooms():void {
 	
 	rooms["crtC4R2318"] = new RoomClass(this);
 	rooms["crtC4R2318"].roomName = "CAVERN\nSOUTH";
-	rooms["crtC4R2318"].description = "TODO";
-	rooms["crtC4R2318"].runOnEnter = null;
+	rooms["crtC4R2318"].description = "";
+	rooms["crtC4R2318"].runOnEnter = crtC4R2318RoomDesc;
 	rooms["crtC4R2318"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2318"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2318"].northExit = "crtC4R2319";
@@ -445,8 +495,8 @@ public function crtInitRooms():void {
 	rooms["crtC4R2318"].addFlag(GLOBAL.CAVE);
 	
 	rooms["crtC4R2218"] = new RoomClass(this);
-	rooms["crtC4R2218"].roomName = "SECLUDED\nSPOT";
-	rooms["crtC4R2218"].description = "TODO";
+	rooms["crtC4R2218"].roomName = "CAVERN\nEND";
+	rooms["crtC4R2218"].description = "The cavern ends here. The stone is smooth and the cold air feels slightly moist - this cavern was probably washed out over centuries. The nyrea left some bedrolls here, though most of them are still sitting around the campfire, too full of adrenaline to sleep just yet.";
 	rooms["crtC4R2218"].runOnEnter = null;
 	rooms["crtC4R2218"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2218"].system = "SYSTEM: SINDATHU";
