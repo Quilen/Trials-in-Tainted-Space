@@ -125,6 +125,18 @@ public function crtLeaveTown():void {
 	addButton(0,"Next",mainGameMenu);
 }
 
+//--------Debug/Testing TODO clean up eventually--------
+
+public function crtCombatTestF():void {
+	CombatManager.newGroundCombat();
+	CombatManager.setFriendlyCharacters([pc, new Queensguard()]);
+	CombatManager.setHostileCharacters([new KQ2Juggernaut(), new KQ2BlackVoidGrunt(), new KQ2BlackVoidGrunt(), new KQ2FenrisDrone()]);
+	CombatManager.victoryCondition(CombatManager.ENTIRE_PARTY_DEFEATED);
+	CombatManager.victoryScene(CombatManager.genericVictory);
+	CombatManager.lossScene(CombatManager.genericLoss);
+	CombatManager.displayLocation("PIRATES");
+	CombatManager.beginCombat();
+}
 
 //--------Challenge 4 begins here--------
 
@@ -305,7 +317,8 @@ public function crtC4CampFire():Boolean {
 
 public function crtInitRooms():void {
 
-	//TODO: remove debug/dev room
+	//--------Testing/Debugging here TODO clean up eventually--------
+
 	rooms["crtTestTele"] = new RoomClass(this);
 	rooms["crtTestTele"].roomName = "Artifical\nEntrypoint";
 	rooms["crtTestTele"].description = "This room isn't. It won't once all the other rooms will."
@@ -313,6 +326,17 @@ public function crtInitRooms():void {
 	rooms["crtTestTele"].planet = "PLANET: MYRELLION";
 	rooms["crtTestTele"].system = "SYSTEM: SINDATHU";
 	rooms["crtTestTele"].northExit = "crtC4R2120";
+	rooms["crtTestTele"].southExit = "crtCombatTest";
+	
+	rooms["crtCombatTest"] = new RoomClass(this);
+	rooms["crtCombatTest"].roomName = "PIRATE\nAMBUSH";
+	rooms["crtCombatTest"].description = "We are piretes. We kill people and take their stuff. Yarr."
+	rooms["crtCombatTest"].runOnEnter = crtCombatTestF;
+	rooms["crtCombatTest"].planet = "PLANET: MYRELLION";
+	rooms["crtCombatTest"].system = "SYSTEM: SINDATHU";
+	rooms["crtCombatTest"].northExit = "crtTestTele";
+	rooms["crtCombatTest"].addFlag(GLOBAL.HAZARD);
+
 	
 	//--------Challenge 4 begins here--------
 	
