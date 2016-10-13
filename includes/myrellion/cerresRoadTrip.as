@@ -247,14 +247,32 @@ public function crtC4R2320RoomDesc():void {
 	}
 }
 
-public function crtC4R2520RoomDesc():void {
+public function crtC4R2420RoomDesc():void {
 	author("Quilen")
-	output("You shine a light into the cavern and see an exit on the other end, as well as a large pile of rocks near the entrance. There's a drop halfway through - nothing too big, but it will be hard to get the wagon down there and you don't even want to think about getting it back up.");
-	if (pc.intelligence() >= 10) {
-		output(" Still, the rocks imply that the passage was made from this side, so there should be some way out over there.");
+	output("The roughly hewn passage continues to the east until it opens up into another cavern. This place must look like swiss cheese...");
+}
+
+public function crtC4R2520RoomDesc():Boolean {
+	author("Quilen")
+	clearMenu();
+	if (flags["CRT_C4_ENTERED_LABYRINTH"] == undefined) {
+		output("You shine a light into the cavern and see an exit on the other end, as well as a large pile of rocks near the entrance. There's a drop halfway through - nothing too big, but it will be hard to get the wagon down there and you don't even want to think about getting it back up.");
+		if (pc.intelligence() >= 10) {
+			output(" Still, the rocks imply that the passage was made from this side, so there should be some way out over there.");
+		} else {
+			output(" Still better than the mouth of a giant monster.");
+		}
+		return false;
 	} else {
-		output(" Still better than the mouth of a giant monster.");
+		output("It would take a lot of time and effort to get the wagon back up the ledge, and in the end you'd still be trapped by a giant lizard-toad. <b>You need to move foreward.</b>");
+		addButton(0, "Back", crtC4R2520GoBack);
+		return true;
 	}
+}
+
+public function crtC4R2520GoBack():void {
+	currentLocation = "crtC4R2620";
+	mainGameMenu();
 }
 
 public function crtC4R2319RoomDesc():void {
@@ -285,6 +303,42 @@ public function crtC4CampFire():Boolean {
 	output("TODO");
 	addButton(14, "Back", mainGameMenu);
 	return true;
+}
+
+public function crtC4R2218RoomDesc():void {
+	author("Quilen")
+	output("The cavern ends here. The stone is smooth and the cold air feels slightly moist - this cavern was probably washed out over centuries. The nyrea left some bedrolls here, though most of them are still sitting around the campfire, too full of adrenaline to sleep just yet.");
+}
+
+//--Labyrinth--
+
+public function crtC4MinoStalk():void {
+	author("Quilen")
+	output("\n\nTODO: The minotaur stalks you.");
+}
+
+public function crtC4R2620RoomDesc():void {
+	author("Quilen")
+	if (flags["CRT_C4_ENTERED_LABYRINTH"] == undefined) {
+		showName("\nDEPARTURE");
+		showBust("QUEENSGUARD");
+		output("You are looking across the cave as Cerres joins you.");
+		output("\n\n<i>\"My liege.\"</i>");
+		//TODO
+		if (pc.isNice()) {
+			output("\n\n<i>\"Hey.\"</i>, you say, with a weary smile.");
+		} else if (pc.isMischievious()) {
+			output("\n\n<i>\"\"</i>");
+		} else if (pc.isAss()) {
+			output("\n\n<i>\"What do you want?\"</i>");
+		}
+		processTime(60 + rand(60));
+		flags["CRT_C4_ENTERED_LABYRINTH"] = 1;
+		crtC4MinoStalk();
+	} else {
+		output("You are in a corridor that was washed out by a now dried up underground river long ago. To the west lies the way back to the main road where the giant lizard-toad lurks. The corridor continues to the north and east.");
+		crtC4MinoStalk();
+	}
 }
 
 
@@ -477,8 +531,8 @@ public function crtInitRooms():void {
 	
 	rooms["crtC4R2420"] = new RoomClass(this);
 	rooms["crtC4R2420"].roomName = "JAGGED\nPASSAGE";
-	rooms["crtC4R2420"].description = "The roughly hewn passage continues to the east until it opens up into another cavern. This place must look like swiss cheese...";
-	rooms["crtC4R2420"].runOnEnter = null;
+	rooms["crtC4R2420"].description = "";
+	rooms["crtC4R2420"].runOnEnter = crtC4R2420RoomDesc;
 	rooms["crtC4R2420"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2420"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2420"].westExit = "crtC4R2320";
@@ -494,7 +548,7 @@ public function crtInitRooms():void {
 	rooms["crtC4R2520"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2520"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2520"].westExit = "crtC4R2420";
-	//rooms["crtC4R2520"].eastExit = "crtC4R2620";
+	rooms["crtC4R2520"].eastExit = "crtC4R2620";
 	rooms["crtC4R2520"].moveMinutes = 2;
 	rooms["crtC4R2520"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2520"].addFlag(GLOBAL.CAVE);
@@ -527,8 +581,8 @@ public function crtInitRooms():void {
 	
 	rooms["crtC4R2218"] = new RoomClass(this);
 	rooms["crtC4R2218"].roomName = "CAVERN\nEND";
-	rooms["crtC4R2218"].description = "The cavern ends here. The stone is smooth and the cold air feels slightly moist - this cavern was probably washed out over centuries. The nyrea left some bedrolls here, though most of them are still sitting around the campfire, too full of adrenaline to sleep just yet.";
-	rooms["crtC4R2218"].runOnEnter = null;
+	rooms["crtC4R2218"].description = "";
+	rooms["crtC4R2218"].runOnEnter = crtC4R2218RoomDesc;
 	rooms["crtC4R2218"].planet = "PLANET: MYRELLION";
 	rooms["crtC4R2218"].system = "SYSTEM: SINDATHU";
 	rooms["crtC4R2218"].eastExit = "crtC4R2318";
@@ -536,6 +590,22 @@ public function crtInitRooms():void {
 	rooms["crtC4R2218"].addFlag(GLOBAL.INDOOR);
 	rooms["crtC4R2218"].addFlag(GLOBAL.CAVE);
 	rooms["crtC4R2218"].addFlag(GLOBAL.BED);
+	
+	//--Labyrinth--
+	
+	rooms["crtC4R2620"] = new RoomClass(this);
+	rooms["crtC4R2620"].roomName = "CAVE\nSYSTEM";
+	rooms["crtC4R2620"].description = "";
+	rooms["crtC4R2620"].runOnEnter = crtC4R2620RoomDesc;
+	rooms["crtC4R2620"].planet = "PLANET: MYRELLION";
+	rooms["crtC4R2620"].system = "SYSTEM: SINDATHU";
+	rooms["crtC4R2620"].westExit = "crtC4R2520";
+	//rooms["crtC4R2620"].northExit = "crtC4R2621";
+	//rooms["crtC4R2620"].eastExit = "crtC4R2720";
+	rooms["crtC4R2620"].moveMinutes = 2;
+	rooms["crtC4R2620"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC4R2620"].addFlag(GLOBAL.CAVE);
+	rooms["crtC4R2620"].addFlag(GLOBAL.HAZARD);
 }
 
 

@@ -21,10 +21,10 @@
 	
 	import classes.Engine.Utility.weightedRand;
 	
-	public class Queensguard extends Creature
+	public class crtCerres extends Creature
 	{
 		
-		public function Queensguard() 
+		public function crtCerres() 
 		{
 			this._latestVersion = 1;
 			this.version = this._latestVersion;
@@ -344,7 +344,7 @@
 					{
 						output(", forcing you back");
 						target.addStatusValue("Cage Distance",1,1);
-						queensguardLongUpdate(target);
+						//queensguardLongUpdate(target);
 					}
 					else
 					{

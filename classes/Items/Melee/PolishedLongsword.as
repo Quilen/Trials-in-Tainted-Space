@@ -6,7 +6,7 @@ package classes.Items.Melee
 	import classes.StringUtil;
 	import classes.Engine.Combat.DamageTypes.DamageFlag;
 	
-	public class NyreanSpear extends ItemSlotClass
+	public class PolishedLongsword extends ItemSlotClass
 	{	
 		public function PolishedLongsword() 
 		{
