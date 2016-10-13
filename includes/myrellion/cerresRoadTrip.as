@@ -127,14 +127,21 @@ public function crtLeaveTown():void {
 
 //--------Debug/Testing TODO clean up eventually--------
 
-public function crtCombatTestF():void {
+public function crtCombatTestF():Boolean {
+	clearMenu()
+	addButton(0, "Fight", crtCombatTestF1);
+	addButton(1, "Back", move, "crtTestTele");
+	return true;
+}
+
+public function crtCombatTestF1():void {
 	CombatManager.newGroundCombat();
-	CombatManager.setFriendlyCharacters([pc, new Queensguard()]);
-	CombatManager.setHostileCharacters([new KQ2Juggernaut(), new KQ2BlackVoidGrunt(), new KQ2BlackVoidGrunt(), new KQ2FenrisDrone()]);
+	CombatManager.setFriendlyCharacters([pc, new crtCerres()]);
+	CombatManager.setHostileCharacters([new CrystalGooT1(), new CrystalGooT1(), new CrystalGooT1(), new CrystalGooT1()]);
 	CombatManager.victoryCondition(CombatManager.ENTIRE_PARTY_DEFEATED);
 	CombatManager.victoryScene(CombatManager.genericVictory);
 	CombatManager.lossScene(CombatManager.genericLoss);
-	CombatManager.displayLocation("PIRATES");
+	CombatManager.displayLocation("GOOPIRATES");
 	CombatManager.beginCombat();
 }
 
@@ -329,8 +336,8 @@ public function crtInitRooms():void {
 	rooms["crtTestTele"].southExit = "crtCombatTest";
 	
 	rooms["crtCombatTest"] = new RoomClass(this);
-	rooms["crtCombatTest"].roomName = "PIRATE\nAMBUSH";
-	rooms["crtCombatTest"].description = "We are piretes. We kill people and take their stuff. Yarr."
+	rooms["crtCombatTest"].roomName = "GOOPIRATE\nAMBUSH";
+	rooms["crtCombatTest"].description = "We are goo-pirates. Yarr."
 	rooms["crtCombatTest"].runOnEnter = crtCombatTestF;
 	rooms["crtCombatTest"].planet = "PLANET: MYRELLION";
 	rooms["crtCombatTest"].system = "SYSTEM: SINDATHU";
