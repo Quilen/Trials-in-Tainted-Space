@@ -76,6 +76,7 @@ public function crtInitFlags():void {
 	flags["CRT_HUNTRESSES_NUMBER"] = 12;
 	flags["CRT_HUNTRESSES_MORALE"] = 50;
 	flags["CRT_GANRAEL_HEALTH"] = 2000;
+	flags["CRT_CERRES_FRIENDNESS"] = 25;
 }
 
 public function crtC4MakeCamp():void {
@@ -155,7 +156,7 @@ public function crtC4horrifyingMonster():Boolean {
 	
 	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
 		output("You can't turn around right now. The tunnel behind you is completely filled by Iumen and you can't demand he crawl ass first into the monster's mouth.");
-	} else if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) && flags["CRT_C4_SHOT_TAKEN"] == undefined ) {
+	} else if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) && flags["CRT_C4_SHOT_TAKEN"] == undefined ) {
 		output("The terrifying monstrosity is still there and she still looks pissed from your last encounter. She paces up and down next to the diminutive passage you escaped through, her footfalls massive and forceful as thunder.\n\nIt's probably better not to go out yet, lest you end up a ");
 		if (pc.armor.defense >= 3) output("crunchy ");
 		output("snack for this beast.");
@@ -178,6 +179,7 @@ public function crtC4horrifyingMonster():Boolean {
 				addDisabledButton(1, "Shoot", "Shoot", "You don't even <i>have</i> a ranged weapon...");
 			}
 		}
+		//TODO: would be funny if the player could write a codex entry
 	}
 	return true;
 }
@@ -193,7 +195,7 @@ public function crtC4horrifyingMonsterTakeShot():void {
 	author("Quilen")
 	flags["CRT_C4_SHOT_TAKEN"] = 1;
 
-	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (8 * 60) ) {
+	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) ) {
 		output("The monstrosity is an easy target, big as a barn and clomping around only meters away. You level your [pc.rangedWeapon] at her and " + pc.rangedWeapon.attackVerb + "! And hit!\n\n...And it didn't do very much.\n\nStill, you can keep " + pc.rangedWeapon.attackVerb + "ing her until she finally succumbs to her injuries. Maybe. After a couple more hits the beast jumps behind an massive rock formation, landing with a <i>THUMP</i> that shakes the ground under you. Looks like you won't get another shot. You briefly consider sneaking away while the beast hides, but there is no way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
 		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "That didn't help very much. You might as well wait for her to die of erosion.");
 	} else {
@@ -212,6 +214,7 @@ public function crtC4horrifyingMonsterTakeShot():void {
 
 public function crtC4R2120RoomDesc():void {
 	author("Quilen")
+	if (flags["CRT_C4_FLEE_TIMESTAMP"] == undefined) flags["CRT_C4_FLEE_TIMESTAMP"] = GetGameTimestamp();
 	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
 		output("You narrowly escaped the beast through this tiny passage. Well, tiny compared to the massive monstrosity outside, anyways - your ganrael friend managed to squeeze in here behind you, though it was a tight fit that left some new scratches on Iumen's carapace.\n\nThe path ahead is shrouded in darkness, unlike the large road you came from. Clearly nobody thought to plant bioluminescent mushrooms in this side passage. No matter - as Cerres points out, you do have lanterns on the supply wagon, though you won't be able to use them until Iumen is no longer stuck in the tunnel like a cork in a bottle.");
 	} else {
@@ -307,7 +310,30 @@ public function crtC4CampFire():Boolean {
 
 public function crtC4R2218RoomDesc():void {
 	author("Quilen")
-	output("The cavern ends here. The stone is smooth and the cold air feels slightly moist - this cavern was probably washed out over centuries. The nyrea left some bedrolls here, though most of them are still sitting around the campfire, too full of adrenaline to sleep just yet.");
+	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) ) {
+		output("The cavern ends here. The stone is smooth and the cold air feels slightly moist - this cavern was probably washed out over centuries. The nyrea left some bedrolls here, though most of them are still sitting around the campfire, too full of adrenaline to sleep just yet.");
+	} else {
+		output("The cavern ends here. The stone is smooth and the cold air feels slightly moist - this cavern was probably washed out over centuries. Most of the bedrolls are in use, though you could still find a free one if you so desired.");
+		if (flags["CRT_HUNTRESSES_MORALE"] <= 50) {
+			output("\nThe nyrea aren't sleeping too well. Some look as tense as fully drawn bows, others twist and turn. Their faces reflect thew horrors of the last days.");
+			if (pc.isNice()) {
+				output(" Hopefully things will go better from now on.");
+			} else if (pc.isMischievous()) {
+				output(" You can't blame them. The last days were hard on them.");
+			} else if (pc.isAss()) {
+				output(" ...Most of them are probably going to die in the next few days, you think to yourself.");
+			}
+		} else {
+			output("\nAsleep, the nyrea look a lot more peaceful.");
+			if (pc.isNice()) {
+				output(" You hope that you can keep them safe.");
+			} else if (pc.isMischievous()) {
+				output(" Quite adorable, really.");
+			} else if (pc.isAss()) {
+				output(" ...Most of them are probably going to die in the next few days, you think to yourself.");
+			}
+		}
+	}
 }
 
 //--Labyrinth--
@@ -326,11 +352,17 @@ public function crtC4R2620RoomDesc():void {
 		output("\n\n<i>\"My liege.\"</i>");
 		//TODO
 		if (pc.isNice()) {
-			output("\n\n<i>\"Hey.\"</i>, you say, with a weary smile.");
-		} else if (pc.isMischievious()) {
+			output("\n\n<i>\"Hey.\"</i>, you say with a weary smile.");
+		} else if (pc.isMischievous()) {
 			output("\n\n<i>\"\"</i>");
 		} else if (pc.isAss()) {
-			output("\n\n<i>\"What do you want?\"</i>");
+			output("\n\n<i>\"Yes?\"</i> You look back.");
+			output("\n\n<i>\"The troops are ready to move and that creature is still blocking the entrance. ");
+			if(flags["CRT_CERRES_FRIENDNESS"] < 33) {
+				output("If your majesty permits, I would have the huntresses lower the supplies so we can proceed in our search for another exit.\"</i>");
+			} else {
+				output("\"</i>");
+			}
 		}
 		processTime(60 + rand(60));
 		flags["CRT_C4_ENTERED_LABYRINTH"] = 1;

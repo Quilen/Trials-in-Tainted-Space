@@ -20,6 +20,7 @@
 	import classes.GameData.CombatManager;
 	
 	import classes.Engine.Utility.weightedRand;
+	import classes.StringUtil;
 	
 	public class crtCerres extends Creature
 	{
@@ -181,7 +182,7 @@
 			this.analVirgin = true;
 			createStatusEffect("Force Male Gender");
 			//this.createStatusEffect("Force Fem Gender");
-			this.createStatusEffect("Flee Disabled",0,0,0,0,true,"","",false,0);
+			//this.createStatusEffect("Flee Disabled",0,0,0,0,true,"","",false,0);
 			
 			isUniqueInFight = true;
 			btnTargetText = "Queensguard";
@@ -199,167 +200,145 @@
 		{
 			var target:Creature = selectTarget(hostileCreatures);
 			if (target == null) return;
+			var player:Creature = selectPlayer(alliedCreatures);
 			
-			//queensguardLongUpdate(target);
+			//TODO: more attacks!
+			//ideas:
+			//	give player a protective buff
+			//	a boring single strike attack
+			//	a stun attack (pommel strike, low accuracy?)
+			//	if at half health: drink potion, drop shield, do halfswording?
 			
-			//TODO: rework from here
-			if(HP()/HPMax() < 0.6 && statusEffectv1("Fungaled") < 3) queensGuardFungalButts();
-			else if(lust() >= 75 && !hasStatusEffect("Focused")) queensGuardLust(target);
-			else if(rand(5) == 0 && !hasStatusEffect("Disarmed")) queensGuardThunderKick(target);
-			else if(rand(3) == 0 || hasStatusEffect("Disarmed")) queensguardShieldBash(target);
-			else if(!target.hasStatusEffect("Stunned") && rand(5) == 0) powerAttackQueensguard(target);
-			else sliceAndDiceQueenieGuardieRetardie(target);
+			if (Math.random() < 0.5) crtSliceAndDice(target);
+			else crtStrongAttack(target);
+	
 		}
 		
-		/*public function queensguardLongUpdate(target:Creature):void
+		//this makes Cherres target injured glass cannons first.
+		override protected function selectTarget(otherTeam:Array):Creature
 		{
-			long = "";
-		}*/
-		
-		private function weaponToggle(toShield:Boolean = false):void
-		{
-			if (toShield = false)
-			{
-				meleeWeapon.attackVerb = "slash";
-				meleeWeapon.attackNoun = "slash";
-				meleeWeapon.longName = "polished longsword";
-				meleeWeapon.baseDamage.kinetic.damageValue = 4;
-			}
-			else
-			{
-				meleeWeapon.attackVerb = "smack";
-				meleeWeapon.attackNoun = "smack";
-				meleeWeapon.longName = "shield";
-				meleeWeapon.baseDamage.kinetic.damageValue = -4;
-			}
-		}
-		
-		private function queensGuardLust(target:Creature):void
-		{
-			output("<i>“Calm yourself, dearest,”</i> Taivra murmurs from her throne, still fucking away at her harem with her bushel of tentacle cocks. <i>“Focus on the fight.”</i>");
-			output("\n\nQueensguard tries to nod, but you can see her breathing hard... see her knees quaking ever so slightly. She clearly wants what you’re selling!");
-			output("\n\n<i>“Beat this star-walker, my guardian, and I promise I will breed you. It’s been so many years, hasn’t it? Do you even remember what it’s like to feel your belly swelling with our young? Think of me, my dearest - don’t let your lusts wander from me now.”</i>");
-			output("\n\nThe Queensguard takes a deep breath to steady herself, turning her amethyst-colored eyes to you with renewed vigor.");
-			lust(-30);
-			output(" (-30 Lust)");
-			createStatusEffect("Focused",0,0,0,0);
-		}
-		
-		private function queensGuardThunderKick(target:Creature):void
-		{
-			output("Queensguard feints, drawing your defenses to her sword, only to kick you square in the gut. You stumble back, but she’s not done yet: the knight pirouettes and slams her shield into you, <b>leaving you staggered</b>.");
-			if (target.hasStatusEffect("Staggered"))
-			{
-				target.setStatusValue("Staggered", 1, 5);
-			}
-			else
-			{
-				target.createStatusEffect("Staggered", 5, 0, 0, 0, false, "Icon_OffDown", "You're staggered, and your Aim and Reflexes have been reduced!", true, 0);
-			}
-			applyDamage(meleeDamage(), this, target, "melee");
-		}
-		
-		private function queensGuardFungalButts():void
-		{
-			output("Queensguard grabs a vial from her belt and pulls up her helm’s visor, just enough to knock back the soupy liquid within - and give you a hint of a scarred, but firmly feminine face underneath. (+50 HP)");
-			HP(50);
-			if(!hasStatusEffect("Fungaled")) createStatusEffect("Fungaled",0,0,0,0);
-			else addStatusValue("Fungaled",1,1);
-		}
-		
-		private function powerAttackQueensguard(target:Creature):void
-		{
-			output("The nyrean knight bellows out a warcry and leaps at you, sword held overhead for a brutal strike! ");
-			if(combatMiss(this, target))
-			{
-				output("You manage to dodge, avoiding what could very well have been a lethal blow!");
-			}
-			else
-			{
-				output("You try and block, but to no avail! Queensguard’s sword slams into you with bone-crushing force, throwing you back and leaving you reeling.");
-				var damage:TypeCollection = damage();
-				damage.add(physique() / 2);
-				damage.multiply(1.4);
-				damageRand(damage, 15);
-				applyDamage(damage, this, target, "melee");
-				if(physique()/2 + rand(20) + 1 >= target.physique()/2 + 10 && !target.hasStatusEffect("Stunned"))
+			var selTarget:Creature = null;
+			var selTargetAttractiveness:Number = 0;
+			
+			for (var i:int = 0; i < otherTeam.length; i++)
+			{	
+				if (otherTeam[i].HP() > 0 && otherTeam[i].lust() < otherTeam[i].lustMax())
 				{
-					output("\n<b>You’re stunned by the blow!</b>");
-					target.createStatusEffect("Stunned",1,0,0,0,false,"Stun","Cannot act for a turn.",true,0,0xFF0000);
+					var curTargetAttractiveness:Number = 0;
+					var curTargetMelee:Number = 0;
+					var curTargetRanged:Number = 0;
+					var curTargetHealth:Number = 10;
+					
+					try {curTargetMelee = otherTeam[i].meleeDamage().getTotal();} catch (error:Error) {}
+					try {curTargetRanged = otherTeam[i].rangedDamage().getTotal();} catch (error:Error) {}
+					try {curTargetHealth = otherTeam[i].HP();} catch (error:Error) {}
+					curTargetAttractiveness = Math.max(curTargetMelee, curTargetRanged, 10) / curTargetHealth;
+					
+					if (curTargetAttractiveness > selTargetAttractiveness)
+					{
+						selTarget = otherTeam[i];
+						selTargetAttractiveness = curTargetAttractiveness;
+					}
 				}
 			}
+			return selTarget;
 		}
 		
-		private function sliceAndDiceQueenieGuardieRetardie(target:Creature):void
+		private function selectPlayer(team:Array):Creature
 		{
-			var damage:DamageResult = new DamageResult();
+			var player:Creature = null;
 			
-			output("Queensguard charges you, swinging her blade in a wide arc. You ");
-			if(combatMiss(this, target)) output("parry it");
-			else
-			{
-				output("stagger back as it strikes you");
-				damage.addResult(applyDamage(meleeDamage(), this, target, "suppress"));
+			for (var i:int = 0; i < team.length; i++)
+			{	
+				if (team[i] is PlayerCharacter)
+				{
+					player = team[i];
+				}
 			}
-			output(", only to ");
-			if(!combatMiss(this, target)) 
-			{
-				output("be slammed with her shield a moment later");
-				weaponToggle(true);
-				damage.addResult(applyDamage(meleeDamage(), this, target, "suppress"));
-				weaponToggle(false);
-			}
-			else output("have to dodge a shield swipe a second later");
-			output(". A third strike, with her sword again this time, follows up, lunging for your chest. You ");
-			if(combatMiss(this, target)) output("barely manage to dodge it");
-			else
-			{
-				output("yelp as the blade slams into you, leaving you reeling");
-				damage.addResult(applyDamage(meleeDamage(), this, target, "suppress"));
-			}
-			output("!");
-			
-			if (damage.totalDamage > 0) outputDamage(damage);
+			return player;
 		}
 		
-		private function queensguardShieldBash(target:Creature):void
+		private function crtSliceAndDice(target:Creature):void
 		{
-			output("With a battle roar that reverberates off the stone walls, the Queensguard charges forward shield-first, trying to slam the steel bulwark into you!");
-			if(combatMiss(this, target))
+			output("Cerres launches a flurry of quick attacks!\n");
+			var hits:int = 0;
+			var cerresHitChance:Number;
+			if (!target.hasStatusEffect("Tripped")) cerresHitChance = 3; else cerresHitChance = 2;
+			
+			for (var i:int = 0; i <= 3; i++)
 			{
-				output("\nYou nimbly side-step the attack, letting the nyrean knight’s momentum carry her right past you!");
-			}
-			else
-			{
-				output("\nYou catch the sides of her shield, grunting with effort and pain as steel slams against your ");
-				if(!(target.armor is EmptySlot)) output("[pc.armor]");
-				else output("bare [pc.skinFurScales]");
-				output(".");
-
-				output(" The sheer weight of the impact");
-				if(target.physique() + rand(20) + 1 >= physique() + 10) output(" nearly staggers you");
+				if(combatMiss(this, target, -1, cerresHitChance))
+				{
+					output("\nCerres misses " + target.getCombatName() + ".");
+				}
 				else
 				{
-					if(target.statusEffectv1("Cage Distance") < 2) 
-					{
-						output(", forcing you back");
-						target.addStatusValue("Cage Distance",1,1);
-						//queensguardLongUpdate(target);
-					}
-					else
-					{
-						output(", knocking the wind out of you enough that the knight is easily able to strike you again, sending you flat on your back. <b>You’re knocked prone!</b>");
-						if(!target.hasStatusEffect("Tripped")) target.createStatusEffect("Tripped", 0, 0, 0, 0, false, "DefenseDown", "You've been tripped, reducing your effective physique and reflexes by 4. You'll have to spend an action standing up.", true, 0);
-					}
+					output("\nCerres " + crtRndAttkVerb() + " " + target.getCombatName() + ". ");
+					applyDamage(damageRand(this.meleeDamage(), 10), this, target, "minimal");
+					hits++;
 				}
-				output("!");
-				//Swap in shield and back out to sword
-				weaponToggle(true);
-				applyDamage(meleeDamage(), this, target, "minimal");
-				weaponToggle(false);
+			}
+			if (hits >= 4)
+			{
+				if(!target.hasStatusEffect("Tripped"))
+				{
+				output("\n\nShe lands every hit and finishes with a shield bash, knocking " + target.getCombatName() + " prone.");
+				applyDamage(this.meleeDamage(), this, target, "minimal");
+				target.createStatusEffect("Tripped", 0, 0, 0, 0, false, "DefenseDown", "You've been tripped, reducing your effective physique and reflexes by 4. You'll have to spend an action standing up.", true, 0);
+				}
+			}
+			else if (hits <= 0)
+			{
+				output("\n\nShe looks slightly embarrassed at her complete failure to hurt the enemy.");
 			}
 		}
 		
+		private function crtRndAttkVerb():String
+		{
+			var verbs:Array = new Array("strikes", "slashes", "slices", "stabs", "kicks", "punches", "headbutts", "rams", "runs through");
+			for each (var verb:String in verbs)
+			{
+				if (Math.random() < 0.2) return verb;
+			}
+			return "hits";
+		}
+		
+		private function crtStrongAttack(target:Creature):void
+		{
+			output("Cerres winds up for a strong attack");
+			var damage:TypeCollection;
+
+			if (Math.random() < 0.5)
+			{
+				if(combatMiss(this, target))
+				{
+					output(" and brings her blade down where " + target.getCombatName() + " stood moments ago.");
+				}
+				else
+				{
+					output(" and brings her blade down on " + target.getCombatName() + " with bone-crushing force.");
+					damage = damageRand(this.meleeDamage(), 10);
+					damage.multiply(2.5);
+					applyDamage(damage, this, target);
+				}
+			}
+			else
+			{
+				if(combatMiss(this, target))
+				{
+					output(" and lunges at " + target.getCombatName() + ". " + StringUtil.capitalize(target.getCombatPronoun("heShe")) + " barely manages to dodge.");
+				}
+				else
+				{
+					output(" and lunges at " + target.getCombatName() + ". ");
+					damage = damageRand(this.meleeDamage(), 10);
+					damage.multiply(2.5);
+					applyDamage(damage, this, target);
+				}
+			}
+				
+		}
+
 	}
 
 }
