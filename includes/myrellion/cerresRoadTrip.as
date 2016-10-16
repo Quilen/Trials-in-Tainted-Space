@@ -72,14 +72,16 @@ TODOS:
 
 //----------------------------------------------------functions--------------------------------------------------
 
-public function crtInitFlags():void {
+public function crtInitFlags():void
+{
 	flags["CRT_HUNTRESSES_NUMBER"] = 12;
 	flags["CRT_HUNTRESSES_MORALE"] = 50;
 	flags["CRT_GANRAEL_HEALTH"] = 2000;
 	flags["CRT_CERRES_FRIENDNESS"] = 25;
 }
 
-public function crtC4MakeCamp():void {
+public function crtC4MakeCamp():void
+{
 	flags["CRT_C4_CAMP_MADE"] = 1;
 	rooms["crtC4R2319"].addFlag(GLOBAL.COMMERCE);
 	rooms["crtC4R2318"].addFlag(GLOBAL.NPC);
@@ -89,11 +91,15 @@ public function crtC4MakeCamp():void {
 
 //----------------------------------------------------dialog-----------------------------------------------------
 
-public function crtStart():void {
-	if (flags["QUEENSGUARD_STAB_TIME"] == undefined || flags["QUEENSGUARD_STAB_TIME"] + (14 * 24 * 60) > GetGameTimestamp()) {
+public function crtStart():void
+{
+	if (flags["QUEENSGUARD_STAB_TIME"] == undefined || flags["QUEENSGUARD_STAB_TIME"] + (14 * 24 * 60) > GetGameTimestamp())
+	{
 		rooms["2I11"].removeFlag(GLOBAL.NPC);
 		output("Several stone pillars line the passage on either side, clearly hand-carved and polished to a shine. Rather than glowing fungus coating the walls, several small clay sconces have been bolted onto the pillars, filled with colonies of the glowing fungus that sheds a soft, warm light across the tunnel. To the west, you can see what looks like a pair of heavy gates, flanked by a pair of large sconces filled with pulsing, glowing fungus.");
-	} else {
+	}
+	else
+	{
 		rooms["2I11"].addFlag(GLOBAL.NPC);
 		output("You find the Queens Road less quiet than you are used to. Cerres, Taivra’s personal bodyguard, is standing amidst a flurry of activity - a dozen nyrea loading supplies onto a wagon the size of a hovertruck, huntresses sharpening their spears, arguing over routes and putting on armor. Cerres herself is directing several nervous looking males as they strap a humongous ganrael into a harness made of ropes thick enough to anchor a warship. The dark green ganrael has taken the shape of a massive caterpillar, all overlapping armorplates and legs as thick as tree trunks, dwarfing the surounding nyrea. When one of the males walks around its almost featureless front it grunts at her. She squeaks and jumps, holding her hands to her chest for a moment before continuing her tasks.\n\nAs soon as Cerres notices you, she takes a few steps towards you, bows, and says <i>“At your service, my liege.”</i>");
 		variableRoomUpdateCheck();
@@ -101,7 +107,8 @@ public function crtStart():void {
 	}
 }
 
-public function crtPrep():void {
+public function crtPrep():void
+{
 	clearOutput();
 	showBust("QUEENSGUARD");
 	showName("\nCERRES");
@@ -116,7 +123,8 @@ public function crtPrep():void {
 }
 
 
-public function crtLeaveTown():void {
+public function crtLeaveTown():void
+{
 	clearOutput();
 	crtInitFlags();
 	//TODO: needs flavor
@@ -128,14 +136,16 @@ public function crtLeaveTown():void {
 
 //--------Debug/Testing TODO clean up eventually--------
 
-public function crtCombatTestF():Boolean {
+public function crtCombatTestF():Boolean
+{
 	clearMenu()
 	addButton(0, "Fight", crtCombatTestF1);
 	addButton(1, "Back", move, "crtTestTele");
 	return true;
 }
 
-public function crtCombatTestF1():void {
+public function crtCombatTestF1():void
+{
 	CombatManager.newGroundCombat();
 	CombatManager.setFriendlyCharacters([pc, new crtCerres()]);
 	CombatManager.setHostileCharacters([new CrystalGooT1(), new CrystalGooT1(), new CrystalGooT1(), new CrystalGooT1()]);
@@ -148,34 +158,51 @@ public function crtCombatTestF1():void {
 
 //--------Challenge 4 begins here--------
 
-public function crtC4horrifyingMonster():Boolean {
+public function crtC4horrifyingMonster():Boolean
+{
 	clearOutput();
 	clearMenu();
 	author("Quilen")
 	if (flags["CRT_C4_FLEE_TIMESTAMP"] == undefined) flags["CRT_C4_FLEE_TIMESTAMP"] = GetGameTimestamp();
 	
-	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
+	if (flags["CRT_C4_CAMP_MADE"] == undefined)
+	{
 		output("You can't turn around right now. The tunnel behind you is completely filled by Iumen and you can't demand he crawl ass first into the monster's mouth.");
-	} else if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) && flags["CRT_C4_SHOT_TAKEN"] == undefined ) {
+	}
+	else if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) && flags["CRT_C4_SHOT_TAKEN"] == undefined )
+	{
 		output("The terrifying monstrosity is still there and she still looks pissed from your last encounter. She paces up and down next to the diminutive passage you escaped through, her footfalls massive and forceful as thunder.\n\nIt's probably better not to go out yet, lest you end up a ");
 		if (pc.armor.defense >= 3) output("crunchy ");
 		output("snack for this beast.");
-	} else if (flags["CRT_C4_SHOT_TAKEN"] != undefined) {
+	}
+	else if (flags["CRT_C4_SHOT_TAKEN"] != undefined)
+	{
 		output("You slowly and carefully peek your head out to look for the beast.\n\nYou can't see her, but you just <i>know</i> that she hasn't given up. Not after your previous fights.");
-	} else {
+	}
+	else
+	{
 		output("You slowly and carefully peek your head out to see if the beast has left in the meantime.\n\nAt first you don't see anything, but upon a closer look you spot the malicious, vengeful glimmer of her eyes in the distance, half hidden behind a rock formation. From afar, the creature is easy to mistake for lifeless scenery - no wonder you ended up in your current predicament...\n\nEither way, it doesn't look like this tenacious terror is going to get tired of hunting you any time soon. You'd better find another way out of here.");
 	}
 	clearMenu();
-	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
+	if (flags["CRT_C4_CAMP_MADE"] == undefined)
+	{
 		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack);
-	} else {
+	}
+	else
+	{
 		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "This creature is too tough a nut to crack.");
-		if (flags["CRT_C4_SHOT_TAKEN"] == undefined && !(pc.meleeWeapon is EmptySlot)) {
+		if (flags["CRT_C4_SHOT_TAKEN"] == undefined && !(pc.meleeWeapon is EmptySlot))
+		{
 			addButton(1, "Shoot", crtC4horrifyingMonsterTakeShot, undefined, "Shoot", "The monster can't reach you! You can shoot her until she dies or runs off!");
-		} else {
-			if (!(pc.meleeWeapon is EmptySlot)) {
+		}
+		else
+		{
+			if (!(pc.meleeWeapon is EmptySlot))
+			{
 				addDisabledButton(1, "Shoot", "Shoot", "You have no reason to assume that you would get her this time. No point wasting ammunition.");
-			} else {
+			}
+			else
+			{
 				addDisabledButton(1, "Shoot", "Shoot", "You don't even <i>have</i> a ranged weapon...");
 			}
 		}
@@ -184,25 +211,33 @@ public function crtC4horrifyingMonster():Boolean {
 	return true;
 }
 
-public function crtC4horrifyingMonsterGoBack():void {
+public function crtC4horrifyingMonsterGoBack():void
+{
 	currentLocation = "crtC4R2120";
 	mainGameMenu();
 }
 
-public function crtC4horrifyingMonsterTakeShot():void {
+public function crtC4horrifyingMonsterTakeShot():void
+{
 	clearOutput();
 	clearMenu();
 	author("Quilen")
 	flags["CRT_C4_SHOT_TAKEN"] = 1;
 
-	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) ) {
+	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) )
+	{
 		output("The monstrosity is an easy target, big as a barn and clomping around only meters away. You level your [pc.rangedWeapon] at her and " + pc.rangedWeapon.attackVerb + "! And hit!\n\n...And it didn't do very much.\n\nStill, you can keep " + pc.rangedWeapon.attackVerb + "ing her until she finally succumbs to her injuries. Maybe. After a couple more hits the beast jumps behind an massive rock formation, landing with a <i>THUMP</i> that shakes the ground under you. Looks like you won't get another shot. You briefly consider sneaking away while the beast hides, but there is no way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
 		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "That didn't help very much. You might as well wait for her to die of erosion.");
-	} else {
+	}
+	else
+	{
 		output("You level your [pc.rangedWeapon] at the creature in the distance. This is going to be a hard shot...\n\nSteady...\n\n...and...\n\n..." + pc.rangedWeapon.attackVerb + "!");
-		if (pc.aim() >= 40) {
+		if (pc.aim() >= 40)
+		{
 			output("\n\nRight in the eye! The beast shrieks in pain and almost panicly scrabbles backwards further into the rock formation before roaring out her now very personal hatred for you.");
-		} else {
+		}
+		else
+		{
 			output("\n\nDamn. Missed.");
 			if (pc.isAss()) output(" You wanted to hurt that fucker so badly.");
 			output("\n\nThe beast gives you a nasty stare before retreating a little further into the rocks.");
@@ -212,79 +247,108 @@ public function crtC4horrifyingMonsterTakeShot():void {
 	}
 }
 
-public function crtC4R2120RoomDesc():void {
+public function crtC4R2120RoomDesc():void
+{
 	author("Quilen")
 	if (flags["CRT_C4_FLEE_TIMESTAMP"] == undefined) flags["CRT_C4_FLEE_TIMESTAMP"] = GetGameTimestamp();
-	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
+	if (flags["CRT_C4_CAMP_MADE"] == undefined)
+	{
 		output("You narrowly escaped the beast through this tiny passage. Well, tiny compared to the massive monstrosity outside, anyways - your ganrael friend managed to squeeze in here behind you, though it was a tight fit that left some new scratches on Iumen's carapace.\n\nThe path ahead is shrouded in darkness, unlike the large road you came from. Clearly nobody thought to plant bioluminescent mushrooms in this side passage. No matter - as Cerres points out, you do have lanterns on the supply wagon, though you won't be able to use them until Iumen is no longer stuck in the tunnel like a cork in a bottle.");
-	} else {
+	}
+	else
+	{
 		output("You carefully make your way through the dark tunnel back to where you escaped the beast. Maybe she gave up her chase and you can leave through where you came from?");
 	}
 }
 
-public function crtC4R2220RoomDesc():void {
+public function crtC4R2220RoomDesc():void
+{
 	author("Quilen")
-	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
-		if (pc.intelligence() >= 7) {
+	if (flags["CRT_C4_CAMP_MADE"] == undefined)
+	{
+		if (pc.intelligence() >= 7)
+		{
 			output("It's getting pretty cramped in here. Behind you, the path is completely filled by Iumen while the huntresses ahead of you are hesitatant to move forward into the pitch black darkness. You remember that your codex has a pretty bright screen and use it to light the way. The huntresses appreciate it and regain some of their confidence.");
 			flags["CRT_HUNTRESSES_MORALE"] += 1;
-		} else {
+		}
+		else
+		{
 			output("It's getting pretty cramped in here. Behind you, the path is completely filled by Iumen while the huntresses ahead of you are hesitatant to move forward into the pitch black darkness. Cerres ends up taking the lead, carefully feeling her way around using her sword's sheath as a cane.");
 		}
-	} else {
+	}
+	else
+	{
 		output("Now that you have some more light and aren't under time pressure, you examine the tunnel a little more closely. It is made of the same white-grey stone as the cavern, but instead of being smoothly worn down by time it is full of jagged edges, as though large plates of rock were broken away with great force. Some rock splinters still lie on the ground, and you think you now know where the pile of stones back at the camp came from. Someone made this tunnel with primitive tools, though it's hard to tell if that was decades or weeks ago.");
 	}
 }
 
-public function crtC4R2320RoomDesc():void {
+public function crtC4R2320RoomDesc():void
+{
 	author("Quilen")
-	if (flags["CRT_C4_CAMP_MADE"] == undefined) {
-		if (pc.intelligence() >= 7) {
+	if (flags["CRT_C4_CAMP_MADE"] == undefined)
+	{
+		if (pc.intelligence() >= 7)
+		{
 			output("Things are finally opening up here - your huntresses quickly circle around to the cart, grab their lanterns and start illuminating the surrounding area.\n\nTo the west is the tight passage you came from. To the east, the passage continues beyond the flickering light of the lanterns - there might be a way out there. To the south lies a somewhat larger cavern made of smooth stone. It's a dead end, but a decent enough place to rest for a bit and get your bearings. Cerres orders the huntresses to make camp. You'll have a a little while to tend to your needs and catch up with everyone before you have to find a way out.");
-		} else {
+		}
+		else
+		{
 			output("Things are finally opening up here - your huntresses feel their way back to the cart and after a bit of groping around they light their lanterns and things start to look a whole lot brighter - literally and figuratively.\n\nTo the west is the tight passage you came from. To the east, the passage continues beyond the flickering light of the lanterns - there might be a way out there. To the south lies a somewhat larger cavern made of smooth stone. It's a dead end, but a decent enough place to rest for a bit and get your bearings. Cerres orders the huntresses to make camp. You'll have a a little while to tend to your needs and catch up with everyone before you have to find a way out.");
 		}
 		crtC4MakeCamp()
-	} else {
+	}
+	else
+	{
 		output("The passage you came from continues here from west to east. To the south is the cavern where you made camp. The huntresses have placed their lanterns so that every inch of it is brightly lit.");
 	}
 }
 
-public function crtC4R2420RoomDesc():void {
+public function crtC4R2420RoomDesc():void
+{
 	author("Quilen")
 	output("The roughly hewn passage continues to the east until it opens up into another cavern. This place must look like swiss cheese...");
 }
 
-public function crtC4R2520RoomDesc():Boolean {
+public function crtC4R2520RoomDesc():Boolean
+{
 	author("Quilen")
 	clearMenu();
-	if (flags["CRT_C4_ENTERED_LABYRINTH"] == undefined) {
+	if (flags["CRT_C4_ENTERED_LABYRINTH"] == undefined)
+	{
 		output("You shine a light into the cavern and see an exit on the other end, as well as a large pile of rocks near the entrance. There's a drop halfway through - nothing too big, but it will be hard to get the wagon down there and you don't even want to think about getting it back up.");
-		if (pc.intelligence() >= 10) {
+		if (pc.intelligence() >= 10)
+		{
 			output(" Still, the rocks imply that the passage was made from this side, so there should be some way out over there.");
-		} else {
+		}
+		else
+		{
 			output(" Still better than the mouth of a giant monster.");
 		}
 		return false;
-	} else {
+	}
+	else
+	{
 		output("It would take a lot of time and effort to get the wagon back up the ledge, and in the end you'd still be trapped by a giant lizard-toad. <b>You need to move foreward.</b>");
 		addButton(0, "Back", crtC4R2520GoBack);
 		return true;
 	}
 }
 
-public function crtC4R2520GoBack():void {
+public function crtC4R2520GoBack():void
+{
 	currentLocation = "crtC4R2620";
 	mainGameMenu();
 }
 
-public function crtC4R2319RoomDesc():void {
+public function crtC4R2319RoomDesc():void
+{
 	author("Quilen")
 	output("The cavern is at its most spacious here, a good five meters across. Iumen has rolled up across its width, blocking most of it with his armor. Two huntresses look watchfully past him.");
 	addButton(0, "Iumen", crtC4CampIumen, undefined, "Iumen", "Check up on the large ganrael.")
 }
 
-public function crtC4CampIumen():Boolean {
+public function crtC4CampIumen():Boolean
+{
 	clearMenu();
 	clearOutput();
 	author("Quilen")
@@ -293,13 +357,15 @@ public function crtC4CampIumen():Boolean {
 	return true;
 }
 
-public function crtC4R2318RoomDesc():void {
+public function crtC4R2318RoomDesc():void
+{
 	author("Quilen")
 	output("TODO small campfire");
 	addButton(0, "Campfire", crtC4CampFire, undefined, "Campfire", "Talk to the nyrea that have gathered around the campfire.")
 }
 
-public function crtC4CampFire():Boolean {
+public function crtC4CampFire():Boolean
+{
 	clearMenu();
 	clearOutput();
 	author("Quilen")
@@ -308,28 +374,43 @@ public function crtC4CampFire():Boolean {
 	return true;
 }
 
-public function crtC4R2218RoomDesc():void {
+public function crtC4R2218RoomDesc():void
+{
 	author("Quilen")
-	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) ) {
+	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) )
+	{
 		output("The cavern ends here. The stone is smooth and the cold air feels slightly moist - this cavern was probably washed out over centuries. The nyrea left some bedrolls here, though most of them are still sitting around the campfire, too full of adrenaline to sleep just yet.");
-	} else {
+	}
+	else
+	{
 		output("The cavern ends here. The stone is smooth and the cold air feels slightly moist - this cavern was probably washed out over centuries. Most of the bedrolls are in use, though you could still find a free one if you so desired.");
-		if (flags["CRT_HUNTRESSES_MORALE"] <= 50) {
+		if (flags["CRT_HUNTRESSES_MORALE"] <= 50)
+		{
 			output("\nThe nyrea aren't sleeping too well. Some look as tense as fully drawn bows, others twist and turn. Their faces reflect thew horrors of the last days.");
-			if (pc.isNice()) {
+			if (pc.isNice())
+			{
 				output(" Hopefully things will go better from now on.");
-			} else if (pc.isMischievous()) {
+			}
+			else if (pc.isMischievous())
+			{
 				output(" You can't blame them. The last days were hard on them.");
-			} else if (pc.isAss()) {
+			}
+			else if (pc.isAss())
+			{
 				output(" ...Most of them are probably going to die in the next few days, you think to yourself.");
 			}
 		} else {
 			output("\nAsleep, the nyrea look a lot more peaceful.");
-			if (pc.isNice()) {
+			if (pc.isNice())
+			{
 				output(" You hope that you can keep them safe.");
-			} else if (pc.isMischievous()) {
+			}
+			else if (pc.isMischievous())
+			{
 				output(" Quite adorable, really.");
-			} else if (pc.isAss()) {
+			}
+			else if (pc.isAss())
+			{
 				output(" ...Most of them are probably going to die in the next few days, you think to yourself.");
 			}
 		}
@@ -338,36 +419,49 @@ public function crtC4R2218RoomDesc():void {
 
 //--Labyrinth--
 
-public function crtC4MinoStalk():void {
+public function crtC4MinoStalk():void
+{
 	author("Quilen")
 	output("\n\nTODO: The minotaur stalks you.");
 }
 
-public function crtC4R2620RoomDesc():void {
+public function crtC4R2620RoomDesc():void
+{
 	author("Quilen")
-	if (flags["CRT_C4_ENTERED_LABYRINTH"] == undefined) {
+	if (flags["CRT_C4_ENTERED_LABYRINTH"] == undefined)
+	{
 		showName("\nDEPARTURE");
 		showBust("QUEENSGUARD");
 		output("You are looking across the cave as Cerres joins you.");
 		output("\n\n<i>\"My liege.\"</i>");
 		//TODO
-		if (pc.isNice()) {
+		if (pc.isNice())
+		{
 			output("\n\n<i>\"Hey.\"</i>, you say with a weary smile.");
-		} else if (pc.isMischievous()) {
+		}
+		else if (pc.isMischievous())
+		{
 			output("\n\n<i>\"\"</i>");
-		} else if (pc.isAss()) {
+		}
+		else if (pc.isAss())
+		{
 			output("\n\n<i>\"Yes?\"</i> You look back.");
 			output("\n\n<i>\"The troops are ready to move and that creature is still blocking the entrance. ");
-			if(flags["CRT_CERRES_FRIENDNESS"] < 33) {
+			if(flags["CRT_CERRES_FRIENDNESS"] < 33)
+			{
 				output("If your majesty permits, I would have the huntresses lower the supplies so we can proceed in our search for another exit.\"</i>");
-			} else {
+			}
+			else
+			{
 				output("\"</i>");
 			}
 		}
 		processTime(60 + rand(60));
 		flags["CRT_C4_ENTERED_LABYRINTH"] = 1;
 		crtC4MinoStalk();
-	} else {
+	}
+	else
+	{
 		output("You are in a corridor that was washed out by a now dried up underground river long ago. To the west lies the way back to the main road where the giant lizard-toad lurks. The corridor continues to the north and east.");
 		crtC4MinoStalk();
 	}
@@ -408,7 +502,8 @@ public function crtC4R2620RoomDesc():void {
 	rooms[""].addFlag(GLOBAL.QUEST);
 */
 
-public function crtInitRooms():void {
+public function crtInitRooms():void
+{
 
 	//--------Testing/Debugging here TODO clean up eventually--------
 
