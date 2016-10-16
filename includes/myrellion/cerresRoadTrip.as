@@ -171,17 +171,17 @@ public function crtC4horrifyingMonster():Boolean
 	}
 	else if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) && flags["CRT_C4_SHOT_TAKEN"] == undefined )
 	{
-		output("The terrifying monstrosity is still there and she still looks pissed from your last encounter. She paces up and down next to the diminutive passage you escaped through, her footfalls massive and forceful as thunder.\n\nIt's probably better not to go out yet, lest you end up a ");
+		output("The terrifying monstrosity is still there and it looks pissed from your last encounter. It paces up and down next to the diminutive passage you escaped through, its footfalls massive and forceful as thunder.\n\nIt's probably better not to go out yet, lest you end up a ");
 		if (pc.armor.defense >= 3) output("crunchy ");
 		output("snack for this beast.");
 	}
 	else if (flags["CRT_C4_SHOT_TAKEN"] != undefined)
 	{
-		output("You slowly and carefully peek your head out to look for the beast.\n\nYou can't see her, but you just <i>know</i> that she hasn't given up. Not after your previous fights.");
+		output("You slowly and carefully peek your head out to look for the beast.\n\nYou can't see it, but you just <i>know</i> that it hasn't given up. Not after your previous fights.");
 	}
 	else
 	{
-		output("You slowly and carefully peek your head out to see if the beast has left in the meantime.\n\nAt first you don't see anything, but upon a closer look you spot the malicious, vengeful glimmer of her eyes in the distance, half hidden behind a rock formation. From afar, the creature is easy to mistake for lifeless scenery - no wonder you ended up in your current predicament...\n\nEither way, it doesn't look like this tenacious terror is going to get tired of hunting you any time soon. You'd better find another way out of here.");
+		output("You slowly and carefully peek your head out to see if the beast has left in the meantime.\n\nAt first you don't see anything, but upon a closer look you spot the malicious, vengeful glimmer of its eyes in the distance, half hidden behind a rock formation. From afar, the creature is easy to mistake for lifeless scenery - no wonder you ended up in your current predicament...\n\nEither way, it doesn't look like this tenacious terror is going to get tired of hunting you any time soon. You'd better find another way out of here.");
 	}
 	clearMenu();
 	if (flags["CRT_C4_CAMP_MADE"] == undefined)
@@ -226,15 +226,15 @@ public function crtC4horrifyingMonsterTakeShot():void
 
 	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) )
 	{
-		output("The monstrosity is an easy target, big as a barn and clomping around only meters away. You level your [pc.rangedWeapon] at her and " + pc.rangedWeapon.attackVerb + "! And hit!\n\n...And it didn't do very much.\n\nStill, you can keep " + pc.rangedWeapon.attackVerb + "ing her until she finally succumbs to her injuries. Maybe. After a couple more hits the beast jumps behind an massive rock formation, landing with a <i>THUMP</i> that shakes the ground under you. Looks like you won't get another shot. You briefly consider sneaking away while the beast hides, but there is no way you're going to get your entire entourage out of harms way before she catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
-		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "That didn't help very much. You might as well wait for her to die of erosion.");
+		output("The monstrosity is an easy target, big as a barn and clomping around only meters away. You level your [pc.rangedWeapon] at it and " + pc.rangedWeapon.attackVerb + "! And hit!\n\n...And it didn't do very much.\n\nStill, you can keep " + pc.rangedWeapon.attackVerb + "ing it until it finally succumbs to its injuries. Maybe. After a couple more hits the beast jumps behind an massive rock formation, landing with a <i>THUMP</i> that shakes the ground under you. Looks like you won't get another shot. You briefly consider sneaking away while the beast hides, but there is no way you're going to get your entire entourage out of harms way before it catches wind of what you are doing. " + (2 + flags["CRT_HUNTRESSES_NUMBER"]) + " people and an oversized ganrael make a lot of noise.");
+		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "That didn't help very much.");
 	}
 	else
 	{
 		output("You level your [pc.rangedWeapon] at the creature in the distance. This is going to be a hard shot...\n\nSteady...\n\n...and...\n\n..." + pc.rangedWeapon.attackVerb + "!");
 		if (pc.aim() >= 40)
 		{
-			output("\n\nRight in the eye! The beast shrieks in pain and almost panicly scrabbles backwards further into the rock formation before roaring out her now very personal hatred for you.");
+			output("\n\nRight in the eye! The beast shrieks in pain and almost panicly scrabbles backwards further into the rock formation before roaring out its now very personal hatred for you.");
 		}
 		else
 		{
@@ -257,7 +257,7 @@ public function crtC4R2120RoomDesc():void
 	}
 	else
 	{
-		output("You carefully make your way through the dark tunnel back to where you escaped the beast. Maybe she gave up her chase and you can leave through where you came from?");
+		output("You carefully make your way through the dark tunnel back to where you escaped the beast. Maybe it gave up its chase and you can leave through where you came from?");
 	}
 }
 
@@ -322,13 +322,13 @@ public function crtC4R2520RoomDesc():Boolean
 		}
 		else
 		{
-			output(" Still better than the mouth of a giant monster.");
+			output(" Still better than the maw of a giant monster.");
 		}
 		return false;
 	}
 	else
 	{
-		output("It would take a lot of time and effort to get the wagon back up the ledge, and in the end you'd still be trapped by a giant lizard-toad. <b>You need to move foreward.</b>");
+		output("It would take a lot of time and effort to get the wagon back up the ledge, and in the end you'd still be trapped by a giant toad-lizard. <b>You need to move foreward.</b>");
 		addButton(0, "Back", crtC4R2520GoBack);
 		return true;
 	}
@@ -386,6 +386,7 @@ public function crtC4CampFire():Boolean
 	clearOutput();
 	author("Quilen")
 	output("TODO");
+	addButton(0, "Cerres", crtC4Cerres, undefined, "Cerres", "Talk to Cerres.")
 	addButton(14, "Back", mainGameMenu);
 	return true;
 }
@@ -488,7 +489,7 @@ public function crtC4R2620RoomDesc():void
 	}
 	else
 	{
-		output("You are in a corridor that was washed out by a now dried up underground river long ago. To the west lies the way back to the main road where the giant lizard-toad lurks. The corridor continues to the north and east.");
+		output("You are in a corridor that was washed out by a now dried up underground river long ago. To the west lies the way back to the main road where the giant toad-lizard lurks. The corridor continues to the north and east.");
 		crtC4MinoStalk();
 	}
 }
