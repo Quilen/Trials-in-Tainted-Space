@@ -343,7 +343,7 @@ public function crtC4R2520GoBack():void
 public function crtC4R2319RoomDesc():void
 {
 	author("Quilen")
-	output("The cavern is at its most spacious here, a good five meters across. Iumen has rolled up across its width, blocking most of it with his armor. Two huntresses look watchfully past him.");
+	output("The cavern is at its most spacious here, a good five meters across. Iumen has rolled up across its width, blocking most of it with his armor. Two huntresses stand guard.");
 	addButton(0, "Iumen", crtC4CampIumen, undefined, "Iumen", "Check up on the large ganrael.")
 }
 
@@ -360,11 +360,37 @@ public function crtC4CampIumen():Boolean
 public function crtC4R2318RoomDesc():void
 {
 	author("Quilen")
-	output("TODO small campfire");
-	addButton(0, "Campfire", crtC4CampFire, undefined, "Campfire", "Talk to the nyrea that have gathered around the campfire.")
+	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) )
+	{
+		output("Cerres and a few huntresses sit around a small campfire here. It's quite tiny so it doesn't consume all the air and there is a pan on top of it that the nyrea use to roast mushrooms. ");
+		if (flags["CRT_HUNTRESSES_MORALE"] <= 50)
+		{
+			output("A glum silence emanates from them.");
+		}
+		else
+		{
+			output("They are animatedly discussing different strategies of escaping this bind. Most agree that you should explore the caves, though you also hear the suggestion to just outwait the beast and one particularly buff huntress proposes digging an escape tunnel.");
+		}
+		addButton(0, "Campfire", crtC4CampFire, undefined, "Campfire", "Talk to the nyrea that have gathered around the campfire.")
+	}
+	else
+	{
+		output("The campfire has gone out by now, and most of the nyrea are either taking a nap or watching the perimeter. Cerres sits nearby, studying a map.");
+		addButton(0, "Cerres", crtC4Cerres, undefined, "Cerres", "Talk to Cerres.")
+	}
 }
 
 public function crtC4CampFire():Boolean
+{
+	clearMenu();
+	clearOutput();
+	author("Quilen")
+	output("TODO");
+	addButton(14, "Back", mainGameMenu);
+	return true;
+}
+
+public function crtC4Cerres():Boolean
 {
 	clearMenu();
 	clearOutput();
