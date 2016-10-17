@@ -49,9 +49,16 @@ Challenges on the way there:
 		-giant monster from previous challenge chases you into small labyrinthine side tunnel
 		-if low intelligence, maze is physically impossible/loops around on itself
 		-ganrael can tunnel through some walls
-		-minotaur-like creature hunts you (or maybe a dragon-person with a hoard)
+		-minotaur hunts you
 			-attacks directly if someone get's seperated from the group, else stalks you audibly
-		-challenge resolved when player finds the exit
+			-myr man who abused minocharge (got it from fanfir) (not intentionally on her part?)
+			-stupid (overdose??? natural idiot?)
+			-WHO IS PUNY NOW???
+		-near exit: dragon-person with hoard (female fanfir)
+			-brings minotaur food
+			-diplomatically asking for passage should be possible (maybe need to do sexual favours?)
+			-if beaten in a fight: get ca. 20 000 credits worth of spoils
+			-either way, exit comes directly after her lair
 	5. Deal with a scout from the enemy tribe
 
 Callenges there:
@@ -446,10 +453,78 @@ public function crtC4R2218RoomDesc():void
 
 //--Labyrinth--
 
-public function crtC4MinoStalk():void
+public function crtC4MinoStalk(depth:Number = 1):void
 {
+	//TODO
 	author("Quilen")
-	output("\n\nTODO: The minotaur stalks you.");
+	crtResetMinostalk();
+	
+	if (flags["CRT_C4_MINOSTALK_LVL"] == 0)
+	{
+		output("The player has good ears is " + crtPlayerHasGoodEars() + "! The nyrea have good ears! one of them will hear the minotaur.");
+	}
+	else if (flags["CRT_C4_MINOSTALK_LVL"] <= 20)
+	{
+	
+	}
+	else if (flags["CRT_C4_MINOSTALK_LVL"] <= 40)
+	{
+	
+	}
+	else if (flags["CRT_C4_MINOSTALK_LVL"] <= 60)
+	{
+	
+	}
+	else if (flags["CRT_C4_MINOSTALK_LVL"] <= 80)
+	{
+	
+	}
+	else if (flags["CRT_C4_MINOSTALK_LVL"] <= 100)
+	{
+	
+	}
+	else
+	{
+	
+	}
+}
+
+public function crtResetMinostalk():void
+{
+	if (flags["CRT_C4_MINOSTALK_LVL"] == undefined) flags["CRT_C4_MINOSTALK_LVL"] = 0;
+	else flags["CRT_C4_MINOSTALK_LVL"] = 1;
+}
+
+public function crtModifyMinostalk(modifier:Number):void
+{
+	if (flags["CRT_C4_MINOSTALK_LVL"] == undefined) flags["CRT_C4_MINOSTALK_LVL"] = 0;
+	else
+	{
+		flags["CRT_C4_MINOSTALK_LVL"] += modifier;
+		if (flags["CRT_C4_MINOSTALK_LVL"] < 1) flags["CRT_C4_MINOSTALK_LVL"] = 1;
+		if (flags["CRT_C4_MINOSTALK_LVL"] > 101) flags["CRT_C4_MINOSTALK_LVL"] = 101;
+	}
+}
+
+public function crtPlayerHasGoodEars():Boolean
+{
+	if (pc.earType == GLOBAL.TYPE_EQUINE ||
+		pc.earType == GLOBAL.TYPE_CANINE ||
+		pc.earType == GLOBAL.TYPE_FELINE ||
+		pc.earType == GLOBAL.TYPE_LAPINE ||
+		pc.earType == GLOBAL.TYPE_KANGAROO ||
+		pc.earType == GLOBAL.TYPE_VULPINE ||
+		pc.earType == GLOBAL.TYPE_DRACONIC ||
+		pc.earType == GLOBAL.TYPE_MOUSE ||
+		pc.earType == GLOBAL.TYPE_PANDA ||
+		pc.earType == GLOBAL.TYPE_LEITHAN ||
+		pc.earType == GLOBAL.TYPE_VANAE ||
+		pc.earType == GLOBAL.TYPE_SYLVAN ||
+		pc.earType == GLOBAL.TYPE_GABILANI)
+	{
+		return true;
+	}
+	return false;
 }
 
 public function crtC4R2620RoomDesc():void
