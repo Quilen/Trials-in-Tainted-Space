@@ -67,7 +67,7 @@
 			this.HPMod = 130;
 			this.HPRaw = this.HPMax();
 			
-			this.femininity = 75;
+			this.femininity = 80;
 			this.eyeType = 0;
 			this.eyeColor = "black";
 			this.thickness = 40;

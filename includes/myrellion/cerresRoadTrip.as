@@ -11,7 +11,7 @@ Companions:
 	-A massive ganrael that draws the supply wagon (smarter then they let on)
 		(can get hurt if something goes wrong) (name: Iumen)
 	-A dozen nyrea huntresses (they act as a pack most of the time)
-		(some of them may die if something goes very wrong)
+		(some of them may get hurt and be unable to contribute if something goes very wrong)
 		(lose morale if things go somewhat wrong, gain morale if you do cool stuff)
 	-Maybe one of the rescued males will be fleshed out more on the way back
 	
@@ -55,10 +55,14 @@ Challenges on the way there:
 			-stupid (overdose??? natural idiot?)
 			-WHO IS PUNY NOW???
 		-near exit: dragon-person with hoard (female fanfir)
-			-brings minotaur food
-			-diplomatically asking for passage should be possible (maybe need to do sexual favours?)
+			-she should be a reasonably nice person
+			-maybe not immediately obvious, though (physically imposing, not particularly oversexed)
+			-could try to make player scared of fanfir manipulating them with her voice
+			-diplomatically asking for passage should be possible
+				(maybe need to give tribute/do sexual favours/make puppy eyes)
 			-if beaten in a fight: get ca. 20 000 credits worth of spoils
 			-either way, exit comes directly after her lair
+			-she might help you out later if you are nice to her
 	5. Deal with a scout from the enemy tribe
 
 Callenges there:
@@ -90,8 +94,54 @@ public function crtInitFlags():void
 public function crtC4MakeCamp():void
 {
 	flags["CRT_C4_CAMP_MADE"] = 1;
-	rooms["crtC4R2319"].addFlag(GLOBAL.COMMERCE);
-	rooms["crtC4R2318"].addFlag(GLOBAL.NPC);
+	rooms["crtC42319"].addFlag(GLOBAL.COMMERCE);
+	rooms["crtC42318"].addFlag(GLOBAL.NPC);
+}
+
+public function crtResetMinostalk():void
+{
+	if (flags["CRT_C4_MINOSTALK_LVL"] == undefined) flags["CRT_C4_MINOSTALK_LVL"] = 0;
+	else flags["CRT_C4_MINOSTALK_LVL"] = 1;
+}
+
+public function crtSetMinostalk(value:Number):void
+{
+	flags["CRT_C4_MINOSTALK_LVL"] = value;
+	if (flags["CRT_C4_MINOSTALK_LVL"] < 0) flags["CRT_C4_MINOSTALK_LVL"] = 0;
+	if (flags["CRT_C4_MINOSTALK_LVL"] > 101) flags["CRT_C4_MINOSTALK_LVL"] = 101;
+}
+
+public function crtModifyMinostalk(modifier:Number):void
+{
+	if (flags["CRT_C4_MINOSTALK_LVL"] == undefined) flags["CRT_C4_MINOSTALK_LVL"] = 0;
+	else
+	{
+		flags["CRT_C4_MINOSTALK_LVL"] += modifier;
+		if (flags["CRT_C4_MINOSTALK_LVL"] < 1) flags["CRT_C4_MINOSTALK_LVL"] = 1;
+		if (flags["CRT_C4_MINOSTALK_LVL"] > 101) flags["CRT_C4_MINOSTALK_LVL"] = 101;
+	}
+}
+
+public function crtPlayerHasGoodEars():Boolean
+{
+	if (pc.earType == GLOBAL.TYPE_EQUINE ||
+		pc.earType == GLOBAL.TYPE_CANINE ||
+		pc.earType == GLOBAL.TYPE_FELINE ||
+		pc.earType == GLOBAL.TYPE_LAPINE ||
+		pc.earType == GLOBAL.TYPE_KANGAROO ||
+		pc.earType == GLOBAL.TYPE_VULPINE ||
+		pc.earType == GLOBAL.TYPE_DRACONIC ||
+		pc.earType == GLOBAL.TYPE_MOUSE ||
+		pc.earType == GLOBAL.TYPE_PANDA ||
+		pc.earType == GLOBAL.TYPE_LEITHAN ||
+		pc.earType == GLOBAL.TYPE_VANAE ||
+		pc.earType == GLOBAL.TYPE_SYLVAN ||
+		pc.earType == GLOBAL.TYPE_GABILANI ||
+		pc.earType == GLOBAL.TYPE_NYREA)
+	{
+		return true;
+	}
+	return false;
 }
 
 
@@ -154,7 +204,7 @@ public function crtCombatTestF():Boolean
 public function crtCombatTestF1():void
 {
 	CombatManager.newGroundCombat();
-	CombatManager.setFriendlyCharacters([pc, new crtCerres()]);
+	CombatManager.setFriendlyCharacters([pc, new crtCerres(), new crtNyreanHuntresses()]);
 	CombatManager.setHostileCharacters([new CrystalGooT1(), new CrystalGooT1(), new CrystalGooT1(), new CrystalGooT1()]);
 	CombatManager.victoryCondition(CombatManager.ENTIRE_PARTY_DEFEATED);
 	CombatManager.victoryScene(CombatManager.genericVictory);
@@ -200,7 +250,7 @@ public function crtC4horrifyingMonster():Boolean
 		addButton(0, "Go Back", crtC4horrifyingMonsterGoBack, undefined, "Go Back", "This creature is too tough a nut to crack.");
 		if (flags["CRT_C4_SHOT_TAKEN"] == undefined && !(pc.meleeWeapon is EmptySlot))
 		{
-			addButton(1, "Shoot", crtC4horrifyingMonsterTakeShot, undefined, "Shoot", "The monster can't reach you! You can shoot her until she dies or runs off!");
+			addButton(1, "Shoot", crtC4horrifyingMonsterTakeShot, undefined, "Shoot", "The monster can't reach you! You can shoot it until she dies or runs off!");
 		}
 		else
 		{
@@ -220,7 +270,7 @@ public function crtC4horrifyingMonster():Boolean
 
 public function crtC4horrifyingMonsterGoBack():void
 {
-	currentLocation = "crtC4R2120";
+	currentLocation = "crtC42120";
 	mainGameMenu();
 }
 
@@ -254,7 +304,7 @@ public function crtC4horrifyingMonsterTakeShot():void
 	}
 }
 
-public function crtC4R2120RoomDesc():void
+public function crtC42120RoomDesc():void
 {
 	author("Quilen")
 	if (flags["CRT_C4_FLEE_TIMESTAMP"] == undefined) flags["CRT_C4_FLEE_TIMESTAMP"] = GetGameTimestamp();
@@ -268,7 +318,7 @@ public function crtC4R2120RoomDesc():void
 	}
 }
 
-public function crtC4R2220RoomDesc():void
+public function crtC42220RoomDesc():void
 {
 	author("Quilen")
 	if (flags["CRT_C4_CAMP_MADE"] == undefined)
@@ -289,7 +339,7 @@ public function crtC4R2220RoomDesc():void
 	}
 }
 
-public function crtC4R2320RoomDesc():void
+public function crtC42320RoomDesc():void
 {
 	author("Quilen")
 	if (flags["CRT_C4_CAMP_MADE"] == undefined)
@@ -310,13 +360,13 @@ public function crtC4R2320RoomDesc():void
 	}
 }
 
-public function crtC4R2420RoomDesc():void
+public function crtC42420RoomDesc():void
 {
 	author("Quilen")
 	output("The roughly hewn passage continues to the east until it opens up into another cavern. This place must look like swiss cheese...");
 }
 
-public function crtC4R2520RoomDesc():Boolean
+public function crtC42520RoomDesc():Boolean
 {
 	author("Quilen")
 	clearMenu();
@@ -336,18 +386,18 @@ public function crtC4R2520RoomDesc():Boolean
 	else
 	{
 		output("It would take a lot of time and effort to get the wagon back up the ledge, and in the end you'd still be trapped by a giant toad-lizard. <b>You need to move foreward.</b>");
-		addButton(0, "Back", crtC4R2520GoBack);
+		addButton(0, "Back", crtC42520GoBack);
 		return true;
 	}
 }
 
-public function crtC4R2520GoBack():void
+public function crtC42520GoBack():void
 {
-	currentLocation = "crtC4R2620";
+	currentLocation = "crtC42620";
 	mainGameMenu();
 }
 
-public function crtC4R2319RoomDesc():void
+public function crtC42319RoomDesc():void
 {
 	author("Quilen")
 	output("The cavern is at its most spacious here, a good five meters across. Iumen has rolled up across its width, blocking most of it with his armor. Two huntresses stand guard.");
@@ -364,13 +414,13 @@ public function crtC4CampIumen():Boolean
 	return true;
 }
 
-public function crtC4R2318RoomDesc():void
+public function crtC42318RoomDesc():void
 {
 	author("Quilen")
 	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) )
 	{
 		output("Cerres and a few huntresses sit around a small campfire here. It's quite tiny so it doesn't consume all the air and there is a pan on top of it that the nyrea use to roast mushrooms. ");
-		if (flags["CRT_HUNTRESSES_MORALE"] <= 50)
+		if (flags["CRT_HUNTRESSES_MORALE"] < 50)
 		{
 			output("A glum silence emanates from them.");
 		}
@@ -408,7 +458,7 @@ public function crtC4Cerres():Boolean
 	return true;
 }
 
-public function crtC4R2218RoomDesc():void
+public function crtC42218RoomDesc():void
 {
 	author("Quilen")
 	if ( (GetGameTimestamp() - flags["CRT_C4_FLEE_TIMESTAMP"]) <= (7 * 60) )
@@ -418,7 +468,7 @@ public function crtC4R2218RoomDesc():void
 	else
 	{
 		output("The cavern ends here. The stone is smooth and the cold air feels slightly moist - this cavern was probably washed out over centuries. Most of the bedrolls are in use, though you could still find a free one if you so desired.");
-		if (flags["CRT_HUNTRESSES_MORALE"] <= 50)
+		if (flags["CRT_HUNTRESSES_MORALE"] < 50)
 		{
 			output("\nThe nyrea aren't sleeping too well. Some look as tense as fully drawn bows, others twist and turn. Their faces reflect thew horrors of the last days.");
 			if (pc.isNice())
@@ -429,10 +479,6 @@ public function crtC4R2218RoomDesc():void
 			{
 				output(" You can't blame them. The last days were hard on them.");
 			}
-			else if (pc.isAss())
-			{
-				output(" ...Most of them are probably going to die in the next few days, you think to yourself.");
-			}
 		} else {
 			output("\nAsleep, the nyrea look a lot more peaceful.");
 			if (pc.isNice())
@@ -442,10 +488,6 @@ public function crtC4R2218RoomDesc():void
 			else if (pc.isMischievous())
 			{
 				output(" Quite adorable, really.");
-			}
-			else if (pc.isAss())
-			{
-				output(" ...Most of them are probably going to die in the next few days, you think to yourself.");
 			}
 		}
 	}
@@ -461,7 +503,7 @@ public function crtC4MinoStalk(depth:Number = 1):void
 	
 	if (flags["CRT_C4_MINOSTALK_LVL"] == 0)
 	{
-		output("The player has good ears is " + crtPlayerHasGoodEars() + "! The nyrea have good ears! one of them will hear the minotaur.");
+		output("The player has good ears is " + crtPlayerHasGoodEars() + "! The nyrea have good ears! One of them will hear the minotaur.");
 	}
 	else if (flags["CRT_C4_MINOSTALK_LVL"] <= 20)
 	{
@@ -489,45 +531,7 @@ public function crtC4MinoStalk(depth:Number = 1):void
 	}
 }
 
-public function crtResetMinostalk():void
-{
-	if (flags["CRT_C4_MINOSTALK_LVL"] == undefined) flags["CRT_C4_MINOSTALK_LVL"] = 0;
-	else flags["CRT_C4_MINOSTALK_LVL"] = 1;
-}
-
-public function crtModifyMinostalk(modifier:Number):void
-{
-	if (flags["CRT_C4_MINOSTALK_LVL"] == undefined) flags["CRT_C4_MINOSTALK_LVL"] = 0;
-	else
-	{
-		flags["CRT_C4_MINOSTALK_LVL"] += modifier;
-		if (flags["CRT_C4_MINOSTALK_LVL"] < 1) flags["CRT_C4_MINOSTALK_LVL"] = 1;
-		if (flags["CRT_C4_MINOSTALK_LVL"] > 101) flags["CRT_C4_MINOSTALK_LVL"] = 101;
-	}
-}
-
-public function crtPlayerHasGoodEars():Boolean
-{
-	if (pc.earType == GLOBAL.TYPE_EQUINE ||
-		pc.earType == GLOBAL.TYPE_CANINE ||
-		pc.earType == GLOBAL.TYPE_FELINE ||
-		pc.earType == GLOBAL.TYPE_LAPINE ||
-		pc.earType == GLOBAL.TYPE_KANGAROO ||
-		pc.earType == GLOBAL.TYPE_VULPINE ||
-		pc.earType == GLOBAL.TYPE_DRACONIC ||
-		pc.earType == GLOBAL.TYPE_MOUSE ||
-		pc.earType == GLOBAL.TYPE_PANDA ||
-		pc.earType == GLOBAL.TYPE_LEITHAN ||
-		pc.earType == GLOBAL.TYPE_VANAE ||
-		pc.earType == GLOBAL.TYPE_SYLVAN ||
-		pc.earType == GLOBAL.TYPE_GABILANI)
-	{
-		return true;
-	}
-	return false;
-}
-
-public function crtC4R2620RoomDesc():void
+public function crtC42620RoomDesc():void
 {
 	author("Quilen")
 	if (flags["CRT_C4_ENTERED_LABYRINTH"] == undefined)
@@ -536,29 +540,22 @@ public function crtC4R2620RoomDesc():void
 		showBust("QUEENSGUARD");
 		output("You are looking across the cave as Cerres joins you.");
 		output("\n\n<i>\"My liege.\"</i>");
-		//TODO
-		if (pc.isNice())
+		if (pc.isNice() || pc.isMischievous())
 		{
-			output("\n\n<i>\"Hey.\"</i>, you say with a weary smile.");
-		}
-		else if (pc.isMischievous())
-		{
-			output("\n\n<i>\"\"</i>");
+			output("\n\n<i>\"Ah, good that you are here. I think I found our exit.\"</i>, you say with a smile.");
+			output("\n\n<i>\"Indeed.\"</i>, Cerres responds with a wry smile, <i>\"I had no idea.\"</i> She shakes her head.");
+			output("\n\nYou chuckle. <i>\"Seriously, though, what can I do for you?\"</i>");
+			output("\n\n<i>\"You seemed ready to move on. I am too.\"</i>");
+			output("\n\n<i>\"Great. Let's go.\"</i>");
 		}
 		else if (pc.isAss())
 		{
 			output("\n\n<i>\"Yes?\"</i> You look back.");
-			output("\n\n<i>\"The troops are ready to move and that creature is still blocking the entrance. ");
-			if(flags["CRT_CERRES_FRIENDNESS"] < 33)
-			{
-				output("If your majesty permits, I would have the huntresses lower the supplies so we can proceed in our search for another exit.\"</i>");
-			}
-			else
-			{
-				output("\"</i>");
-			}
+			output("\n\n<i>\"Your majesty, you look ready to move on. May I call the troops?\"</i>");
+			output("\n\n<i>\"Yes. It is time to get out of here.\"</i>");
 		}
-		processTime(60 + rand(60));
+		output("\n\nCerres calls the other nyrea, and after a bit of grumbling they are hard at work moving the wagon past the drop. It is barely deeper than a person's height, but that's trouble enough for half a ton of wood, metal und supplies. After untethering Iumen he crawls down the rock wall and the huntresses use him as a makeshift ramp toguide the cart down. They are grunting in exertion as they use all their strength to keep the cart from sliding off the side, but eventually it is done and you are ready to move on.");
+		processTime(30 + rand(30));
 		flags["CRT_C4_ENTERED_LABYRINTH"] = 1;
 		crtC4MinoStalk();
 	}
@@ -606,6 +603,8 @@ public function crtC4R2620RoomDesc():void
 
 public function crtInitRooms():void
 {
+	//Note: my roomname convention is: crt + [current challenge/chapter] + [x-coordinates] + [y-coordinates]
+	//		crt[letter + digit][2 digits][2 digits]
 
 	//--------Testing/Debugging here TODO clean up eventually--------
 
@@ -615,7 +614,7 @@ public function crtInitRooms():void
 	rooms["crtTestTele"].runOnEnter = null;
 	rooms["crtTestTele"].planet = "PLANET: MYRELLION";
 	rooms["crtTestTele"].system = "SYSTEM: SINDATHU";
-	rooms["crtTestTele"].northExit = "crtC4R2120";
+	rooms["crtTestTele"].northExit = "crtC42120";
 	rooms["crtTestTele"].southExit = "crtCombatTest";
 	
 	rooms["crtCombatTest"] = new RoomClass(this);
@@ -630,211 +629,211 @@ public function crtInitRooms():void
 	
 	//--------Challenge 4 begins here--------
 	
-	rooms["crtC4R2020"] = new RoomClass(this);
-	rooms["crtC4R2020"].roomName = "HORRIFYING\nMONSTER";
-	rooms["crtC4R2020"].description = "";
-	rooms["crtC4R2020"].runOnEnter = crtC4horrifyingMonster;
-	rooms["crtC4R2020"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2020"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2020"].northExit = "crtC4R2021";
-	rooms["crtC4R2020"].southExit = "crtC4R2019";
-	rooms["crtC4R2020"].eastExit = "crtC4R2120";
-	rooms["crtC4R2020"].moveMinutes = 2;
-	rooms["crtC4R2020"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2020"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2020"].addFlag(GLOBAL.CAVE);
-	rooms["crtC4R2020"].addFlag(GLOBAL.QUEST);
+	rooms["crtC42020"] = new RoomClass(this);
+	rooms["crtC42020"].roomName = "HORRIFYING\nMONSTER";
+	rooms["crtC42020"].description = "";
+	rooms["crtC42020"].runOnEnter = crtC4horrifyingMonster;
+	rooms["crtC42020"].planet = "PLANET: MYRELLION";
+	rooms["crtC42020"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42020"].northExit = "crtC42021";
+	rooms["crtC42020"].southExit = "crtC42019";
+	rooms["crtC42020"].eastExit = "crtC42120";
+	rooms["crtC42020"].moveMinutes = 2;
+	rooms["crtC42020"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42020"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC42020"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42020"].addFlag(GLOBAL.QUEST);
 
-	rooms["crtC4R2021"] = new RoomClass(this);
-	rooms["crtC4R2021"].roomName = "MAIN\nROAD";
-	rooms["crtC4R2021"].description = "A large, wide open passage.";
-	rooms["crtC4R2021"].runOnEnter = null;
-	rooms["crtC4R2021"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2021"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2021"].southExit = "crtC4R2020";
-	rooms["crtC4R2021"].northExit = "crtC4R2022";
-	rooms["crtC4R2021"].moveMinutes = 2;
-	rooms["crtC4R2021"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2021"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2021"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42021"] = new RoomClass(this);
+	rooms["crtC42021"].roomName = "MAIN\nROAD";
+	rooms["crtC42021"].description = "A large, wide open passage.";
+	rooms["crtC42021"].runOnEnter = null;
+	rooms["crtC42021"].planet = "PLANET: MYRELLION";
+	rooms["crtC42021"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42021"].southExit = "crtC42020";
+	rooms["crtC42021"].northExit = "crtC42022";
+	rooms["crtC42021"].moveMinutes = 2;
+	rooms["crtC42021"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42021"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC42021"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2022"] = new RoomClass(this);
-	rooms["crtC4R2022"].roomName = "MAIN\nROAD";
-	rooms["crtC4R2022"].description = "A large, wide open passage.";
-	rooms["crtC4R2022"].runOnEnter = null;
-	rooms["crtC4R2022"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2022"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2022"].southExit = "crtC4R2021";
-	rooms["crtC4R2022"].northExit = "crtC4R2023";
-	rooms["crtC4R2022"].moveMinutes = 2;
-	rooms["crtC4R2022"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2022"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2022"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42022"] = new RoomClass(this);
+	rooms["crtC42022"].roomName = "MAIN\nROAD";
+	rooms["crtC42022"].description = "A large, wide open passage.";
+	rooms["crtC42022"].runOnEnter = null;
+	rooms["crtC42022"].planet = "PLANET: MYRELLION";
+	rooms["crtC42022"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42022"].southExit = "crtC42021";
+	rooms["crtC42022"].northExit = "crtC42023";
+	rooms["crtC42022"].moveMinutes = 2;
+	rooms["crtC42022"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42022"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC42022"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2023"] = new RoomClass(this);
-	rooms["crtC4R2023"].roomName = "MAIN\nROAD";
-	rooms["crtC4R2023"].description = "A large, wide open passage.";
-	rooms["crtC4R2023"].runOnEnter = null;
-	rooms["crtC4R2023"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2023"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2023"].southExit = "crtC4R2022";
-	rooms["crtC4R2023"].moveMinutes = 2;
-	rooms["crtC4R2023"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2023"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2023"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42023"] = new RoomClass(this);
+	rooms["crtC42023"].roomName = "MAIN\nROAD";
+	rooms["crtC42023"].description = "A large, wide open passage.";
+	rooms["crtC42023"].runOnEnter = null;
+	rooms["crtC42023"].planet = "PLANET: MYRELLION";
+	rooms["crtC42023"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42023"].southExit = "crtC42022";
+	rooms["crtC42023"].moveMinutes = 2;
+	rooms["crtC42023"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42023"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC42023"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2019"] = new RoomClass(this);
-	rooms["crtC4R2019"].roomName = "MAIN\nROAD";
-	rooms["crtC4R2019"].description = "A large, wide open passage.";
-	rooms["crtC4R2019"].runOnEnter = null;
-	rooms["crtC4R2019"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2019"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2019"].northExit = "crtC4R2020";
-	rooms["crtC4R2019"].southExit = "crtC4R2018";
-	rooms["crtC4R2019"].moveMinutes = 2;
-	rooms["crtC4R2019"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2019"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2019"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42019"] = new RoomClass(this);
+	rooms["crtC42019"].roomName = "MAIN\nROAD";
+	rooms["crtC42019"].description = "A large, wide open passage.";
+	rooms["crtC42019"].runOnEnter = null;
+	rooms["crtC42019"].planet = "PLANET: MYRELLION";
+	rooms["crtC42019"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42019"].northExit = "crtC42020";
+	rooms["crtC42019"].southExit = "crtC42018";
+	rooms["crtC42019"].moveMinutes = 2;
+	rooms["crtC42019"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42019"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC42019"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2018"] = new RoomClass(this);
-	rooms["crtC4R2018"].roomName = "MAIN\nROAD";
-	rooms["crtC4R2018"].description = "A large, wide open passage.";
-	rooms["crtC4R2018"].runOnEnter = null;
-	rooms["crtC4R2018"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2018"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2018"].northExit = "crtC4R2019";
-	rooms["crtC4R2018"].southExit = "crtC4R2017";
-	rooms["crtC4R2018"].moveMinutes = 2;
-	rooms["crtC4R2018"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2018"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2018"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42018"] = new RoomClass(this);
+	rooms["crtC42018"].roomName = "MAIN\nROAD";
+	rooms["crtC42018"].description = "A large, wide open passage.";
+	rooms["crtC42018"].runOnEnter = null;
+	rooms["crtC42018"].planet = "PLANET: MYRELLION";
+	rooms["crtC42018"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42018"].northExit = "crtC42019";
+	rooms["crtC42018"].southExit = "crtC42017";
+	rooms["crtC42018"].moveMinutes = 2;
+	rooms["crtC42018"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42018"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC42018"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2017"] = new RoomClass(this);
-	rooms["crtC4R2017"].roomName = "MAIN\nROAD";
-	rooms["crtC4R2017"].description = "A large, wide open passage.";
-	rooms["crtC4R2017"].runOnEnter = null;
-	rooms["crtC4R2017"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2017"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2017"].northExit = "crtC4R2018";
-	rooms["crtC4R2017"].moveMinutes = 2;
-	rooms["crtC4R2017"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2017"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2017"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42017"] = new RoomClass(this);
+	rooms["crtC42017"].roomName = "MAIN\nROAD";
+	rooms["crtC42017"].description = "A large, wide open passage.";
+	rooms["crtC42017"].runOnEnter = null;
+	rooms["crtC42017"].planet = "PLANET: MYRELLION";
+	rooms["crtC42017"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42017"].northExit = "crtC42018";
+	rooms["crtC42017"].moveMinutes = 2;
+	rooms["crtC42017"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42017"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC42017"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2120"] = new RoomClass(this);
-	rooms["crtC4R2120"].roomName = "CAVE\nMOUTH";
-	rooms["crtC4R2120"].description = "";
-	rooms["crtC4R2120"].runOnEnter = crtC4R2120RoomDesc;
-	rooms["crtC4R2120"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2120"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2120"].westExit = "crtC4R2020";
-	rooms["crtC4R2120"].eastExit = "crtC4R2220";
-	rooms["crtC4R2120"].moveMinutes = 2;
-	rooms["crtC4R2120"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2120"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42120"] = new RoomClass(this);
+	rooms["crtC42120"].roomName = "CAVE\nMOUTH";
+	rooms["crtC42120"].description = "";
+	rooms["crtC42120"].runOnEnter = crtC42120RoomDesc;
+	rooms["crtC42120"].planet = "PLANET: MYRELLION";
+	rooms["crtC42120"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42120"].westExit = "crtC42020";
+	rooms["crtC42120"].eastExit = "crtC42220";
+	rooms["crtC42120"].moveMinutes = 2;
+	rooms["crtC42120"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42120"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2220"] = new RoomClass(this);
-	rooms["crtC4R2220"].roomName = "NARROW\nPASSAGE";
-	rooms["crtC4R2220"].description = "";
-	rooms["crtC4R2220"].runOnEnter = crtC4R2220RoomDesc;
-	rooms["crtC4R2220"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2220"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2220"].westExit = "crtC4R2120";
-	rooms["crtC4R2220"].eastExit = "crtC4R2320";
-	rooms["crtC4R2220"].moveMinutes = 2;
-	rooms["crtC4R2220"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2220"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42220"] = new RoomClass(this);
+	rooms["crtC42220"].roomName = "NARROW\nPASSAGE";
+	rooms["crtC42220"].description = "";
+	rooms["crtC42220"].runOnEnter = crtC42220RoomDesc;
+	rooms["crtC42220"].planet = "PLANET: MYRELLION";
+	rooms["crtC42220"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42220"].westExit = "crtC42120";
+	rooms["crtC42220"].eastExit = "crtC42320";
+	rooms["crtC42220"].moveMinutes = 2;
+	rooms["crtC42220"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42220"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2320"] = new RoomClass(this);
-	rooms["crtC4R2320"].roomName = "\nCROSSROADS";
-	rooms["crtC4R2320"].description = "";
-	rooms["crtC4R2320"].runOnEnter = crtC4R2320RoomDesc;
-	rooms["crtC4R2320"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2320"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2320"].westExit = "crtC4R2220";
-	rooms["crtC4R2320"].eastExit = "crtC4R2420";
-	rooms["crtC4R2320"].southExit = "crtC4R2319";
-	rooms["crtC4R2320"].moveMinutes = 2;
-	rooms["crtC4R2320"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2320"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42320"] = new RoomClass(this);
+	rooms["crtC42320"].roomName = "\nCROSSROADS";
+	rooms["crtC42320"].description = "";
+	rooms["crtC42320"].runOnEnter = crtC42320RoomDesc;
+	rooms["crtC42320"].planet = "PLANET: MYRELLION";
+	rooms["crtC42320"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42320"].westExit = "crtC42220";
+	rooms["crtC42320"].eastExit = "crtC42420";
+	rooms["crtC42320"].southExit = "crtC42319";
+	rooms["crtC42320"].moveMinutes = 2;
+	rooms["crtC42320"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42320"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2420"] = new RoomClass(this);
-	rooms["crtC4R2420"].roomName = "JAGGED\nPASSAGE";
-	rooms["crtC4R2420"].description = "";
-	rooms["crtC4R2420"].runOnEnter = crtC4R2420RoomDesc;
-	rooms["crtC4R2420"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2420"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2420"].westExit = "crtC4R2320";
-	rooms["crtC4R2420"].eastExit = "crtC4R2520";
-	rooms["crtC4R2420"].moveMinutes = 2;
-	rooms["crtC4R2420"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2420"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42420"] = new RoomClass(this);
+	rooms["crtC42420"].roomName = "JAGGED\nPASSAGE";
+	rooms["crtC42420"].description = "";
+	rooms["crtC42420"].runOnEnter = crtC42420RoomDesc;
+	rooms["crtC42420"].planet = "PLANET: MYRELLION";
+	rooms["crtC42420"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42420"].westExit = "crtC42320";
+	rooms["crtC42420"].eastExit = "crtC42520";
+	rooms["crtC42420"].moveMinutes = 2;
+	rooms["crtC42420"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42420"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2520"] = new RoomClass(this);
-	rooms["crtC4R2520"].roomName = "NATURAL\nCAVERN";
-	rooms["crtC4R2520"].description = "";
-	rooms["crtC4R2520"].runOnEnter = crtC4R2520RoomDesc;
-	rooms["crtC4R2520"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2520"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2520"].westExit = "crtC4R2420";
-	rooms["crtC4R2520"].eastExit = "crtC4R2620";
-	rooms["crtC4R2520"].moveMinutes = 2;
-	rooms["crtC4R2520"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2520"].addFlag(GLOBAL.CAVE);
-	rooms["crtC4R2520"].addFlag(GLOBAL.HAZARD);
-	rooms["crtC4R2520"].addFlag(GLOBAL.OBJECTIVE);
+	rooms["crtC42520"] = new RoomClass(this);
+	rooms["crtC42520"].roomName = "NATURAL\nCAVERN";
+	rooms["crtC42520"].description = "";
+	rooms["crtC42520"].runOnEnter = crtC42520RoomDesc;
+	rooms["crtC42520"].planet = "PLANET: MYRELLION";
+	rooms["crtC42520"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42520"].westExit = "crtC42420";
+	rooms["crtC42520"].eastExit = "crtC42620";
+	rooms["crtC42520"].moveMinutes = 2;
+	rooms["crtC42520"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42520"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42520"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC42520"].addFlag(GLOBAL.OBJECTIVE);
 	
-	rooms["crtC4R2319"] = new RoomClass(this);
-	rooms["crtC4R2319"].roomName = "CAVERN\nNORTH";
-	rooms["crtC4R2319"].description = "";
-	rooms["crtC4R2319"].runOnEnter = crtC4R2319RoomDesc;
-	rooms["crtC4R2319"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2319"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2319"].northExit = "crtC4R2320";
-	rooms["crtC4R2319"].southExit = "crtC4R2318";
-	rooms["crtC4R2319"].moveMinutes = 2;
-	rooms["crtC4R2319"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2319"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42319"] = new RoomClass(this);
+	rooms["crtC42319"].roomName = "CAVERN\nNORTH";
+	rooms["crtC42319"].description = "";
+	rooms["crtC42319"].runOnEnter = crtC42319RoomDesc;
+	rooms["crtC42319"].planet = "PLANET: MYRELLION";
+	rooms["crtC42319"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42319"].northExit = "crtC42320";
+	rooms["crtC42319"].southExit = "crtC42318";
+	rooms["crtC42319"].moveMinutes = 2;
+	rooms["crtC42319"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42319"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2318"] = new RoomClass(this);
-	rooms["crtC4R2318"].roomName = "CAVERN\nSOUTH";
-	rooms["crtC4R2318"].description = "";
-	rooms["crtC4R2318"].runOnEnter = crtC4R2318RoomDesc;
-	rooms["crtC4R2318"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2318"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2318"].northExit = "crtC4R2319";
-	rooms["crtC4R2318"].westExit = "crtC4R2218";
-	rooms["crtC4R2318"].moveMinutes = 2;
-	rooms["crtC4R2318"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2318"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42318"] = new RoomClass(this);
+	rooms["crtC42318"].roomName = "CAVERN\nSOUTH";
+	rooms["crtC42318"].description = "";
+	rooms["crtC42318"].runOnEnter = crtC42318RoomDesc;
+	rooms["crtC42318"].planet = "PLANET: MYRELLION";
+	rooms["crtC42318"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42318"].northExit = "crtC42319";
+	rooms["crtC42318"].westExit = "crtC42218";
+	rooms["crtC42318"].moveMinutes = 2;
+	rooms["crtC42318"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42318"].addFlag(GLOBAL.CAVE);
 	
-	rooms["crtC4R2218"] = new RoomClass(this);
-	rooms["crtC4R2218"].roomName = "CAVERN\nEND";
-	rooms["crtC4R2218"].description = "";
-	rooms["crtC4R2218"].runOnEnter = crtC4R2218RoomDesc;
-	rooms["crtC4R2218"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2218"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2218"].eastExit = "crtC4R2318";
-	rooms["crtC4R2218"].moveMinutes = 2;
-	rooms["crtC4R2218"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2218"].addFlag(GLOBAL.CAVE);
-	rooms["crtC4R2218"].addFlag(GLOBAL.BED);
+	rooms["crtC42218"] = new RoomClass(this);
+	rooms["crtC42218"].roomName = "CAVERN\nEND";
+	rooms["crtC42218"].description = "";
+	rooms["crtC42218"].runOnEnter = crtC42218RoomDesc;
+	rooms["crtC42218"].planet = "PLANET: MYRELLION";
+	rooms["crtC42218"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42218"].eastExit = "crtC42318";
+	rooms["crtC42218"].moveMinutes = 2;
+	rooms["crtC42218"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42218"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42218"].addFlag(GLOBAL.BED);
 	
 	//--Labyrinth--
 	
-	rooms["crtC4R2620"] = new RoomClass(this);
-	rooms["crtC4R2620"].roomName = "CAVE\nSYSTEM";
-	rooms["crtC4R2620"].description = "";
-	rooms["crtC4R2620"].runOnEnter = crtC4R2620RoomDesc;
-	rooms["crtC4R2620"].planet = "PLANET: MYRELLION";
-	rooms["crtC4R2620"].system = "SYSTEM: SINDATHU";
-	rooms["crtC4R2620"].westExit = "crtC4R2520";
-	//rooms["crtC4R2620"].northExit = "crtC4R2621";
-	//rooms["crtC4R2620"].eastExit = "crtC4R2720";
-	rooms["crtC4R2620"].moveMinutes = 2;
-	rooms["crtC4R2620"].addFlag(GLOBAL.INDOOR);
-	rooms["crtC4R2620"].addFlag(GLOBAL.CAVE);
-	rooms["crtC4R2620"].addFlag(GLOBAL.HAZARD);
+	rooms["crtC42620"] = new RoomClass(this);
+	rooms["crtC42620"].roomName = "CAVE\nSYSTEM";
+	rooms["crtC42620"].description = "";
+	rooms["crtC42620"].runOnEnter = crtC42620RoomDesc;
+	rooms["crtC42620"].planet = "PLANET: MYRELLION";
+	rooms["crtC42620"].system = "SYSTEM: SINDATHU";
+	rooms["crtC42620"].westExit = "crtC42520";
+	//rooms["crtC42620"].northExit = "crtC42621";
+	//rooms["crtC42620"].eastExit = "crtC42720";
+	rooms["crtC42620"].moveMinutes = 2;
+	rooms["crtC42620"].addFlag(GLOBAL.INDOOR);
+	rooms["crtC42620"].addFlag(GLOBAL.CAVE);
+	rooms["crtC42620"].addFlag(GLOBAL.HAZARD);
 }
 
 
