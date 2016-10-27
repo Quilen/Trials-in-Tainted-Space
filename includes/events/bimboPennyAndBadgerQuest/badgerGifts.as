@@ -18,6 +18,7 @@ public function abeAuthor():void
 
 public function pcBimboedByBadger():Boolean
 {
+	if (flags["DR_LASH_DEBADGERED_PC"] != undefined) return false;
 	return (flags["DR_BADGER_BIMBOED_PC"] != undefined);
 }
 public function pennyIsCumSlut():Boolean

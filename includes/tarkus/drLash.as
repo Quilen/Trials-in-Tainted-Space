@@ -203,6 +203,11 @@ public function walkUpToDocLashAgain(back:Boolean = true):void
 	if(pc.hasKeyItem("Doctor Badger's Bimbo Raygun - Still programmed for use on Penny.")) addButton(2,"Raygun?",raygunStuff,undefined,"Ask About Doctor Badger's Raygun","Talk to Doctor Lash about the raygun Dr. Badger gave you for Penny, and see if he can help you change it to work on her instead");
 	shopkeep = chars["DRLASH"];
 	addButton(5,"Buy",buyItem,undefined,"Buy","Ask Dr. Lash if he has any items to sell.");
+	
+	if (pc.isBimbo())
+	{
+		addButton(6,"Debimbo",lashDeBimbo,undefined,"Debimbo","Ask Dr. Lash if he can, like, help you with this totally embarrassing speech problem.");
+	}
 
 	addButton(14,"Back",mainGameMenu);
 }
@@ -591,3 +596,213 @@ public function winVsDoctorLash():void
 	CombatManager.genericVictory();
 }
 
+public function lashDeBimbo():void
+{
+	clearOutput();
+	showDrLash();
+	clearMenu();
+	author("Quilen");
+	
+	output("<i>\"So, like, I've been having this problem lately, and it's like totally embarrassing.\"</i>\n\n")
+	output("Dr. Lash looks at you silently.\n\n")
+	output("<i>\"And it's like totally been causing me trouble all the time! So, like, this one time there was this guy when...\"</i>\n\n")
+	output("You feel Dr. Lash's eyes narrow behind his visor, making you more and more nervous by the second. But you can't stop the words coming out of your mouth.\n\n")
+	if (!pc.isTreated() && flags["DR_BADGER_BIMBOED_PC"] != undefined && flags["DR_LASH_DEBADGERED_PC"] == undefined)
+	{
+		output("<i>\"...and ever since that badger lady poked me with that needle I've had these intra... er intru...? these thoughts about cocks and cunts and I'm, like, talking like this and...\"</i>\n\n")
+		output("Dr. Lash cuts you off. <i>\"I have heard enough.\"<\i>\n");
+	}
+	else
+	{
+		output("<i>\"...and I have, like, work to do, but they are, like, so sexy and I just couldn't stop thinking about...\"</i>\n")
+		output("<i>\"...so I, like, tell her and she just looks at me like I'm, like, a total idiot even though I clearly said...\"</i>\n")
+		output("<i>\"...but he totally didn't listen...\"</i>\n")
+		output("\n<i>\"Dr. Lash raises his voice. <b>Enough.</b>\"<\i>\n");
+	}
+	
+	if (pc.isTreated())
+	{
+		output("<i>\"Your condition is beyond the tools I can muster on this dungheap of a planet. Go away.\"</i>\n\n");
+		output("You make puppy eyes. <i>\"But doctor...\"</i>\n\n");
+		output("<i>\"Begone!\"</i>\n\n");
+		addButton(14,"Leave",move,"209");
+	}
+	else if (flags["DR_BADGER_BIMBOED_PC"] != undefined && flags["DR_LASH_DEBADGERED_PC"] == undefined)
+	{
+		output("<i>\"That ruiner. She is mutilating the few people in this dump who might have the gift, robbing others of the spark she so clings to herself. Ruthless. Inconsiderate. Do not worry, I </i>will<i> make you whole again. Undoing Badger's works and sharing the enlightenment I have gained with another promising individual will be reward enough.\"<\i>");
+		addButton(0,"Next",lashDeBimboFree, undefined,"Next","Let Dr. Lash help you with the effects of your Bimbofication. He probably won't stop at the mental parts.");
+		if (pc.credits >= 20000) addButton(1,"LetMePay",lashDeBimboPaid,undefined,"LetMePay","20,000 credits. Dr. Lash doesn't hide his enthusiasm for removing genitals. If you pay him he'll hopefully leave your bits alone.");
+		else addDisabledButton(1,"LetMePay","LetMePay","20,000 credits. Dr. Lash doesn't hide his enthusiasm for removing genitals. If you had the credits to pay him he might be convinced to leave your bits alone.");
+		addButton(14,"Back",walkUpToDocLashAgain);
+	}
+	else
+	{
+		output("<i>\"You have made your case. You can spare me your babbling from now on, your affliction is obvious. And yes, I do have a remedy, though it will not come cheap since it requires uncommon one-use tools and a great deal of time. Your grey matter is the most valuable thing you possess and you would do well to protect it better in the future.\"</i>\n\n");
+		if (pc.credits >= 25000) addButton(0,"Pay",lashDeBimboNoBadger,undefined,"Pay","25,000 credits. Removing the effects of Bimbofication from a person requires delicate tools and a great deal of patience. Dr. Lash expects you to pay fully for both.");
+		else addDisabledButton(0,"LetMePay","LetMePay","25,000 credits. Removing the effects of Bimbofication from a person requires delicate tools and a great deal of patience. Dr. Lash expects you to pay fully for both.");
+		addButton(14,"Back",walkUpToDocLashAgain);
+	}
+}
+
+public function lashDeBimboFree():void
+{
+	clearOutput();
+	showDrLash();
+	clearMenu();
+	author("Quilen");
+	
+	output("<i>\"Thanks, doc.\"</i>\n\n");
+	output("<i>\"Do not expect this kind of generosity in the future. This is strictly an effort to stem the tide of Badger's baleful influence.\"</i>\n\n");
+	output("Shortly afterwards, you lie down  on a hard stretcher and Lash injects you with a small syringe. Everything feels very, very far away...\n\n");
+	
+	output("...until it doesn't. You sit up. <i>\"Did it work?\"</i> ")
+	if (pc.biggestTitSize() >= 4) output("Your chest feels a lot lighter, so Lash clearly did <i>something</i>.");
+	output("Uncharacteristically for him, Dr. Lash actually takes the time to ask you a few questions and even performs a quick IQ test. ");
+	if(pc.IQ() < 50) output("You don't do particularly well, but the doctor assures you that you will be able to make up your losses fairly quickly, ");
+	else output("You do pretty well and the doctor seems confident that you will only get even better, ");
+	
+	if(pc.hasWombPregnancy())
+	{
+		output("<i>\"now that I have purged you of Badger's poison\"</i>. He goes on to complain that your pregnancy didn't allow him to remove your vagina, too. ")
+	}
+	else
+	{
+		output("<i>\"now that I have removed your distractions\"</i>.")
+		if(pc.genitalLocation() <= 1) output("You push a hand between your legs ");
+		else output("You turn around to look at your genitals ");
+		output("and true enough, nothing is there. ")
+	}
+	
+	output("Still, you can't <i>really</i> complain - your mind feels sharper than ever, and you feel ready to face the world. As you leave, Dr. Lash tells you to return anytime you might get saddled with burdensome sexual characteristics.");
+
+	lashRmMentalBimbo();
+	lashPaymentInGenitals()
+	flags["DR_LASH_DEBADGERED_PC"] = 1;
+	processTime(24*60 + rand(24*60));
+	addButton(0,"Next",mainGameMenu);
+}
+
+public function lashDeBimboPaid():void
+{
+	clearOutput();
+	showDrLash();
+	clearMenu();
+	author("Quilen");
+	
+	output("<i>\"Thanks, doc, but oh my god, I like totally still need my fun parts. Maybe you could, like, help me with my talking and thinking now and I'll get the, like, full package later?\"</i>\n\n");
+	output("<i>\"You aren't competent to make that decision in this state. But fine. You will come to realise the benefits of my program soon enough once your mind is no longer clouded by Badgers poison. However, in this case, I </i>will<i> require compensation for the considerable amount of specialised equipment and time spent in the process.\"</i>\n\n");
+	output("You quickly pull out your Codex and pay the outrageous sum. Shortly afterwards, you lie down on a hard stretcher and Lash injects you with a small syringe. Everything feels very, very far away...\n\n");
+	
+	output("...until it doesn't. You sit up. <i>\"Did it work?\"</i> Uncharacteristically for him, Dr. Lash actually asks you a few questions until, satisfied that you didn't say the word 'like' once in five minutes, he kicks you out the door.\n\n<i>\"Come back when you are ready to go all the way.\"</i>\n\nStill, you can't complain. Your head feels a lot clearer, more focused and alert, and true to his promise the rest of you is unchanged.");
+	
+	pc.credits -= 20000;
+	lashRmMentalBimbo();
+	flags["DR_LASH_DEBADGERED_PC"] = 1;
+	processTime(24*60 + rand(24*60));
+	addButton(0,"Next",move,"209");
+}
+
+public function lashDeBimboNoBadger():void
+{
+	clearOutput();
+	showDrLash();
+	clearMenu();
+	author("Quilen");
+
+	output("You quickly pull out your Codex and pay the outrageous sum. Shortly afterwards, you lie down on a hard stretcher and Lash injects you with a small syringe. Everything feels very, very far away...\n\n");
+	
+	output("...until it doesn't. You sit up. <i>\"Did it work?\"</i> Uncharacteristically for him, Dr. Lash actually asks you a few questions until, satisfied that you didn't say the word 'like' once in five minutes, he kicks you out the door.\n\nStill, you can't complain. Your head feels a lot clearer, more focused and alert, and it doesn't look like he performed any unwanted alterations.");
+	
+	pc.credits -= 25000;
+	lashRmMentalBimbo();
+	processTime(24*60 + rand(24*60));
+	addButton(0,"Next",move,"209");
+}
+
+public function lashRmMentalBimbo():void
+{
+	if(pc.hasPerk("Easy"))
+	{
+		output("\n\n(<b>Bimbo Perk Lost: Easy</b> - gain 20% more lust from combat sources.)");
+		pc.removePerk("Easy");
+	}
+	if(pc.hasPerk("Inhuman Desire"))
+	{
+		output("\n\n(<b>Bimbo Perk Lost: Inhuman Desire</b> - Your maximum lust is increased by 15.)");
+		pc.removePerk("Inhuman Desire");
+	}
+	if(pc.hasPerk("Breed Hungry"))
+	{
+		output("\n\n(<b>Bimbo Perk Lost: Breed Hungry</b> - Your balls refill much faster than normal and your pregnancies are more likely and faster.)");
+		pc.removePerk("Breed Hungry");
+	}
+	if(pc.hasPerk("Ditz Speech"))
+	{
+		output("\n\n(<b>Lost Perk: Ditz Speech</b> - You will now sound like a total bimbo in scenes that support it.)");
+		pc.removePerk("Ditz Speech");
+	}
+	if(pc.hasPerk("Fuck Sense"))
+	{
+		output("\n\n(<b>Perk Lost: Fuck Sense</b> - The Sense ability now relies on your libido rather than intelligence.)");
+		pc.removePerk("Fuck Sense");
+	}
+	if(pc.hasPerk("Weak Willed"))
+	{
+		output("\n\n(<b>Lost Perk: Weak Will</b> - You lose willpower twice as fast.)");
+		pc.removePerk("Weak Willed");
+	}
+	if(pc.libido() > 80) pc.libido(-20);
+	if(pc.libido() > 50) pc.libido(-20);
+	if(pc.libido() > 20) pc.libido(-20);
+	pc.slowStatGain("intelligence",10);
+}
+
+public function lashPaymentInGenitals():void
+{
+	if(pc.hasParasiteTail() || attachedMimbranes() > 0)
+	{
+		if (pc.hasParasiteTail())
+		{
+			pc.tailType = GLOBAL.TYPE_HUMAN;
+			pc.tailCount = 0;
+			pc.tailFlags = [];
+			pc.tailGenital = 0;
+			pc.tailGenitalArg = 0;
+			pc.tailGenitalColor = "";
+			
+			flags["CUNT_TAIL_PREGNANT_TIMER"] = undefined;
+			flags["DAYS_SINCE_FED_CUNT_TAIL"] = undefined;
+		}
+		if (attachedMimbranes() > 0)
+		{
+			removeMimbranes();
+		}
+	}
+	
+	pc.removeCocks();
+	if(!pc.hasWombPregnancy()) pc.removeVaginas();
+	pc.balls = 0;
+	while(pc.bRows() > 1)
+	{
+		pc.removeBreastRow((pc.bRows()-1),1);
+	}
+	pc.breastRows[0].breastRatingRaw = 0;
+	pc.breastRows[0].breastRatingLactationMod = 0;
+	pc.milkFullness = 0;
+	pc.milkMultiplier = 0;
+	pc.breastRows[0].breastRatingHoneypotMod = 0;
+	
+	if(pc.breastRows[0].nippleType != GLOBAL.NIPPLE_TYPE_FLAT) pc.breastRows[0].nippleType = GLOBAL.NIPPLE_TYPE_NORMAL;
+	pc.nippleLengthRatio = 1;
+	pc.nippleWidthRatio = 1;
+	if(pc.breastRows[0].nippleType != GLOBAL.NIPPLE_TYPE_FLAT && pc.nipplesPerBreast > 0) pc.nipplesPerBreast = 1;
+	
+	if(!pc.hasGenitals())
+	{
+		if(pc.hasStatusEffect("Genital Slit")) pc.removeStatusEffect("Genital Slit");
+	}
+	if(pc.balls == 0)
+	{
+		if(pc.hasStatusEffect("Uniball")) pc.removeStatusEffect("Uniball");
+	}
+}

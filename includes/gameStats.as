@@ -3597,10 +3597,15 @@ public function displayEncounterLog(showID:String = "All"):void
 			{
 				output2("\n<b><u>The Bimbotorium</u></b>");
 				output2("\n<b>* Status:</b>");
-				if(flags["DR_BADGER_BIMBOED_PC"] != undefined)
+				if(flags["DR_BADGER_BIMBOED_PC"] != undefined && flags["DR_LASH_DEBADGERED_PC"] == undefined)
 				{
 					output2(" Accepted Bimbofication");
 					if(silly) output2(", <i>Like, you’re a hero now!</i>");
+				}
+				else if (flags["DR_LASH_DEBADGERED_PC"] != undefined)
+				{
+					output2(" Reversed Bimbofication");
+					if(silly) output2(". <i>Still a hero!</i>");
 				}
 				else output2(" Refused Bimbofication");
 				output2("\n<b>* Doctor Badger:</b>");
