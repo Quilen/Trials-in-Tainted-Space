@@ -16,6 +16,8 @@
 	import classes.Items.Apparel.CheerleaderUniform;
 	import classes.Items.Apparel.BunnyOutfit;
 	import classes.Items.Apparel.SchoolgirlOutfit;
+	import classes.Items.Apparel.DildoPanties;
+	import classes.Items.Apparel.DildoBra;
 	import classes.Items.Accessories.Allure;
 	import classes.Engine.Utility.rand;
 	
@@ -51,6 +53,8 @@
 			this.inventory.push(new CheerleaderUniform());
 			this.inventory.push(new BunnyOutfit());
 			this.inventory.push(new SchoolgirlOutfit());
+			this.inventory.push(new DildoPanties());
+			this.inventory.push(new DildoBra());
 
 
 
