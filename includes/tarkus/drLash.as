@@ -206,7 +206,8 @@ public function walkUpToDocLashAgain(back:Boolean = true):void
 	
 	if (pc.isBimbo())
 	{
-		addButton(6,"Debimbo",lashDeBimbo,undefined,"Debimbo","Ask Dr. Lash if he can, like, help you with this totally embarrassing speech problem.");
+		if(pc.hasStatusEffect("GaloMax")) addDisabledButton(6,"Debimbo","Debimbo","You can ask Dr. Lash if he can, like, help you with this totally embarrassing speech problem ONCE YOU ARE NO LONGER RAPIDLY MORPHING INTO A GOO PERSON.");
+		else addButton(6,"Debimbo",lashDeBimbo,undefined,"Debimbo","Ask Dr. Lash if he can, like, help you with this totally embarrassing speech problem.");
 	}
 
 	addButton(14,"Back",mainGameMenu);
